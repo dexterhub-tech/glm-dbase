@@ -1,0 +1,234 @@
+[
+  {
+    "originalPath": "src\\integrations\\supabase\\add_date_of_birth.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\add_date_of_birth.sql",
+    "timestamp": "2025-12-09T16:51:49.832Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\add_indexes.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\add_indexes.sql",
+    "timestamp": "2025-12-09T16:51:49.833Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\add_indexes_fixed.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\add_indexes_fixed.sql",
+    "timestamp": "2025-12-09T16:51:49.834Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\add_missing_sync_functions.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\add_missing_sync_functions.sql",
+    "timestamp": "2025-12-09T16:51:49.834Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\add_popsabey_as_superadmin.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\add_popsabey_as_superadmin.sql",
+    "timestamp": "2025-12-09T16:51:49.836Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\add_superadmin_function.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\add_superadmin_function.sql",
+    "timestamp": "2025-12-09T16:51:49.837Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\add_title_column.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\add_title_column.sql",
+    "timestamp": "2025-12-09T16:51:49.838Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\add_userid_column.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\add_userid_column.sql",
+    "timestamp": "2025-12-09T16:51:49.839Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\check_and_fix_super_admins.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\check_and_fix_super_admins.sql",
+    "timestamp": "2025-12-09T16:51:49.840Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\church_units_update.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\church_units_update.sql",
+    "timestamp": "2025-12-09T16:51:49.841Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\fix_list_super_admins.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\fix_list_super_admins.sql",
+    "timestamp": "2025-12-09T16:51:49.842Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\fix_superadmin_function.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\fix_superadmin_function.sql",
+    "timestamp": "2025-12-09T16:51:49.843Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\fix_superadmin_function_complete.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\fix_superadmin_function_complete.sql",
+    "timestamp": "2025-12-09T16:51:49.843Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\fix_superadmin_function_with_drops.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\fix_superadmin_function_with_drops.sql",
+    "timestamp": "2025-12-09T16:51:49.844Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\fix_super_admins_simple.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\fix_super_admins_simple.sql",
+    "timestamp": "2025-12-09T16:51:49.844Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\fix_super_admins_with_hardcoded.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\fix_super_admins_with_hardcoded.sql",
+    "timestamp": "2025-12-09T16:51:49.848Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\fix_userid_constraint.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\fix_userid_constraint.sql",
+    "timestamp": "2025-12-09T16:51:49.849Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\fix_userid_constraint_simple.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\fix_userid_constraint_simple.sql",
+    "timestamp": "2025-12-09T16:51:49.850Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\fix_user_roles_rls.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\fix_user_roles_rls.sql",
+    "timestamp": "2025-12-09T16:51:49.850Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\profile_schema_update.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\profile_schema_update.sql",
+    "timestamp": "2025-12-09T16:51:49.851Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\rename_tof_to_cloventongues.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\rename_tof_to_cloventongues.sql",
+    "timestamp": "2025-12-09T16:51:49.853Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\schema_updates.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\schema_updates.sql",
+    "timestamp": "2025-12-09T16:51:49.854Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\standardize_fields.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\standardize_fields.sql",
+    "timestamp": "2025-12-09T16:51:49.855Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\standardize_fields_improved.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\standardize_fields_improved.sql",
+    "timestamp": "2025-12-09T16:51:49.855Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\standardize_role_management.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\standardize_role_management.sql",
+    "timestamp": "2025-12-09T16:51:49.856Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\sync_auth_users_complete.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\sync_auth_users_complete.sql",
+    "timestamp": "2025-12-09T16:51:49.857Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\sync_profiles_to_members.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\sync_profiles_to_members.sql",
+    "timestamp": "2025-12-09T16:51:49.857Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\triggers.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\triggers.sql",
+    "timestamp": "2025-12-09T16:51:49.857Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  },
+  {
+    "originalPath": "src\\integrations\\supabase\\trigger_check_function.sql",
+    "archivePath": "docs\\archived\\sql\\migrations\\trigger_check_function.sql",
+    "timestamp": "2025-12-09T16:51:49.858Z",
+    "success": true,
+    "skipped": true,
+    "reason": "Already exists in archive"
+  }
+]

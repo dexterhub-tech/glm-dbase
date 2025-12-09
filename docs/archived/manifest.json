@@ -1,0 +1,591 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2025-12-09T17:34:47.143Z",
+  "files": [
+    {
+      "originalPath": "src/contexts/AuthContext-complex.tsx.bak",
+      "archivePath": "docs\\archived\\backups\\AuthContext-complex.tsx.bak",
+      "timestamp": "2025-12-09T17:12:00.739Z",
+      "success": true
+    },
+    {
+      "originalPath": "src/contexts/AuthContext.fix.js",
+      "archivePath": "docs\\archived\\backups\\AuthContext.fix.js",
+      "timestamp": "2025-12-09T17:12:00.742Z",
+      "success": true
+    },
+    {
+      "originalPath": "current-db-backup.json",
+      "archivePath": "docs\\archived\\backups\\current-db-backup.json",
+      "timestamp": "2025-12-09T17:12:00.736Z",
+      "success": true
+    },
+    {
+      "originalPath": "src/fix.js",
+      "archivePath": "docs\\archived\\backups\\fix.js",
+      "timestamp": "2025-12-09T17:12:00.747Z",
+      "success": true
+    },
+    {
+      "originalPath": "src/mobile-fix.js",
+      "archivePath": "docs\\archived\\backups\\mobile-fix.js",
+      "timestamp": "2025-12-09T17:12:00.755Z",
+      "success": true
+    },
+    {
+      "originalPath": "src/mobile-view-fix.txt",
+      "archivePath": "docs\\archived\\backups\\mobile-view-fix.txt",
+      "timestamp": "2025-12-09T17:12:00.757Z",
+      "success": true
+    },
+    {
+      "originalPath": "src/superuser-fix.js",
+      "archivePath": "docs\\archived\\backups\\superuser-fix.js",
+      "timestamp": "2025-12-09T17:12:00.762Z",
+      "success": true
+    },
+    {
+      "originalPath": "src/components/EventCard.tsx",
+      "archivePath": "docs\\archived\\components\\EventCard.tsx",
+      "timestamp": "2025-12-09T12:18:55.584Z",
+      "success": true
+    },
+    {
+      "originalPath": "src/components/Footer.tsx",
+      "archivePath": "docs\\archived\\components\\Footer.tsx",
+      "timestamp": "2025-12-09T12:18:55.599Z",
+      "success": true
+    },
+    {
+      "originalPath": "src/components/Header.tsx",
+      "archivePath": "docs\\archived\\components\\Header.tsx",
+      "timestamp": "2025-12-09T12:18:55.606Z",
+      "success": true
+    },
+    {
+      "originalPath": "src/components/Hero.tsx",
+      "archivePath": "docs\\archived\\components\\Hero.tsx",
+      "timestamp": "2025-12-09T12:18:55.614Z",
+      "success": true
+    },
+    {
+      "originalPath": "src/components/SermonCard.tsx",
+      "archivePath": "docs\\archived\\components\\SermonCard.tsx",
+      "timestamp": "2025-12-09T12:18:55.621Z",
+      "success": true
+    },
+    {
+      "originalPath": "debug-login.html",
+      "archivePath": "docs\\archived\\html-tests\\debug-login.html",
+      "timestamp": "2025-12-09T16:57:03.446Z",
+      "success": true
+    },
+    {
+      "originalPath": "superadmin-fix.html",
+      "archivePath": "docs\\archived\\html-tests\\superadmin-fix.html",
+      "timestamp": "2025-12-09T16:57:03.456Z",
+      "success": true
+    },
+    {
+      "originalPath": "test-frontend-signin.html",
+      "archivePath": "docs\\archived\\html-tests\\test-frontend-signin.html",
+      "timestamp": "2025-12-09T16:57:03.461Z",
+      "success": true
+    },
+    {
+      "originalPath": "test-pastor-fix.html",
+      "archivePath": "docs\\archived\\html-tests\\test-pastor-fix.html",
+      "timestamp": "2025-12-09T16:57:03.471Z",
+      "success": true
+    },
+    {
+      "originalPath": "CHURCH_UNITS_IMPLEMENTATION.md",
+      "archivePath": "docs\\archived\\markdown-docs\\CHURCH_UNITS_IMPLEMENTATION.md",
+      "timestamp": "2025-12-09T17:19:40.663Z",
+      "success": true
+    },
+    {
+      "originalPath": "db-error.md",
+      "archivePath": "docs\\archived\\markdown-docs\\db-error.md",
+      "timestamp": "2025-12-09T17:19:40.671Z",
+      "success": true
+    },
+    {
+      "originalPath": "diagnostic-report.md",
+      "archivePath": "docs\\archived\\markdown-docs\\diagnostic-report.md",
+      "timestamp": "2025-12-09T17:19:40.675Z",
+      "success": true
+    },
+    {
+      "originalPath": "EVENT_DETAIL_FIX.md",
+      "archivePath": "docs\\archived\\markdown-docs\\EVENT_DETAIL_FIX.md",
+      "timestamp": "2025-12-09T17:19:40.682Z",
+      "success": true
+    },
+    {
+      "originalPath": "EVENT_IMAGE_ENHANCEMENT.md",
+      "archivePath": "docs\\archived\\markdown-docs\\EVENT_IMAGE_ENHANCEMENT.md",
+      "timestamp": "2025-12-09T17:19:40.689Z",
+      "success": true
+    },
+    {
+      "originalPath": "EVENT_MANAGEMENT_SETUP.md",
+      "archivePath": "docs\\archived\\markdown-docs\\EVENT_MANAGEMENT_SETUP.md",
+      "timestamp": "2025-12-09T17:19:40.695Z",
+      "success": true
+    },
+    {
+      "originalPath": "PHONE_VALIDATION_FIX.md",
+      "archivePath": "docs\\archived\\markdown-docs\\PHONE_VALIDATION_FIX.md",
+      "timestamp": "2025-12-09T17:19:40.697Z",
+      "success": true
+    },
+    {
+      "originalPath": "SETUP_SUPERUSER_ACCESS.md",
+      "archivePath": "docs\\archived\\markdown-docs\\SETUP_SUPERUSER_ACCESS.md",
+      "timestamp": "2025-12-09T17:19:40.705Z",
+      "success": true
+    },
+    {
+      "originalPath": "SIGNUP_ERROR_PERMANENT_FIX.md",
+      "archivePath": "docs\\archived\\markdown-docs\\SIGNUP_ERROR_PERMANENT_FIX.md",
+      "timestamp": "2025-12-09T17:19:40.713Z",
+      "success": true
+    },
+    {
+      "originalPath": "SIGNUP_FIX_GUIDE.md",
+      "archivePath": "docs\\archived\\markdown-docs\\SIGNUP_FIX_GUIDE.md",
+      "timestamp": "2025-12-09T17:19:40.722Z",
+      "success": true
+    },
+    {
+      "originalPath": "SOLUTION.md",
+      "archivePath": "docs\\archived\\markdown-docs\\SOLUTION.md",
+      "timestamp": "2025-12-09T17:19:40.727Z",
+      "success": true
+    },
+    {
+      "originalPath": "SYNC_SETUP_INSTRUCTIONS.md",
+      "archivePath": "docs\\archived\\markdown-docs\\SYNC_SETUP_INSTRUCTIONS.md",
+      "timestamp": "2025-12-09T17:19:40.731Z",
+      "success": true
+    },
+    {
+      "originalPath": "src/pages/About.tsx",
+      "archivePath": "docs\\archived\\pages\\About.tsx",
+      "timestamp": "2025-12-09T12:18:57.377Z",
+      "success": true
+    },
+    {
+      "originalPath": "src/pages/Contact.tsx",
+      "archivePath": "docs\\archived\\pages\\Contact.tsx",
+      "timestamp": "2025-12-09T12:18:57.426Z",
+      "success": true
+    },
+    {
+      "originalPath": "src/pages/EventDetail.tsx",
+      "archivePath": "docs\\archived\\pages\\EventDetail.tsx",
+      "timestamp": "2025-12-09T12:18:57.435Z",
+      "success": true
+    },
+    {
+      "originalPath": "src/pages/Events.tsx",
+      "archivePath": "docs\\archived\\pages\\Events.tsx",
+      "timestamp": "2025-12-09T12:18:57.444Z",
+      "success": true
+    },
+    {
+      "originalPath": "src/pages/Index.tsx",
+      "archivePath": "docs\\archived\\pages\\Index.tsx",
+      "timestamp": "2025-12-09T12:18:57.453Z",
+      "success": true
+    },
+    {
+      "originalPath": "src/pages/Partnership.tsx",
+      "archivePath": "docs\\archived\\pages\\Partnership.tsx",
+      "timestamp": "2025-12-09T12:18:57.469Z",
+      "success": true
+    },
+    {
+      "originalPath": "src/pages/Sermons.tsx",
+      "archivePath": "docs\\archived\\pages\\Sermons.tsx",
+      "timestamp": "2025-12-09T12:18:57.487Z",
+      "success": true
+    },
+    {
+      "originalPath": "src/pages/Terms.tsx",
+      "archivePath": "docs\\archived\\pages\\Terms.tsx",
+      "timestamp": "2025-12-09T12:18:57.505Z",
+      "success": true
+    },
+    {
+      "originalPath": "fix-git-commands.bat",
+      "archivePath": "docs\\archived\\scripts\\fix-git-commands.bat",
+      "timestamp": "2025-12-09T12:18:54.975Z",
+      "success": true,
+      "purpose": "Git repository setup script - removes existing remote, commits changes, and provides instructions for adding GitHub remote"
+    },
+    {
+      "originalPath": "fix-phone-validation.bat",
+      "archivePath": "docs\\archived\\scripts\\fix-phone-validation.bat",
+      "timestamp": "2025-12-09T12:18:54.990Z",
+      "success": true,
+      "purpose": "Phone validation fix script - runs node script to fix phone validation constraint for Nigerian phone numbers starting with 0"
+    },
+    {
+      "originalPath": "push-to-github.bat",
+      "archivePath": "docs\\archived\\scripts\\push-to-github.bat",
+      "timestamp": "2025-12-09T12:18:55.038Z",
+      "success": true,
+      "purpose": "GitHub push automation script - sets up remote, commits all changes, and pushes to gigscode/glm_database repository"
+    },
+    {
+      "originalPath": "run-signup-fix.bat",
+      "archivePath": "docs\\archived\\scripts\\run-signup-fix.bat",
+      "timestamp": "2025-12-09T12:18:55.045Z",
+      "success": true,
+      "purpose": "Signup fix helper script - opens permanent_signup_fix.sql in notepad and provides instructions for running it in Supabase"
+    },
+    {
+      "originalPath": "DIRECT_SQL_FIX.sql",
+      "archivePath": "docs\\archived\\sql\\DIRECT_SQL_FIX.sql",
+      "timestamp": "2025-12-09T16:48:47.592Z",
+      "success": true,
+      "purpose": "Direct SQL fix for database issues"
+    },
+    {
+      "originalPath": "emergency_fix_simple.sql",
+      "archivePath": "docs\\archived\\sql\\emergency_fix_simple.sql",
+      "timestamp": "2025-12-09T16:48:59.174Z",
+      "success": true,
+      "purpose": "Emergency simple fix for critical database issues"
+    },
+    {
+      "originalPath": "fix_phone_constraint.sql",
+      "archivePath": "docs\\archived\\sql\\fix_phone_constraint.sql",
+      "timestamp": "2025-12-09T16:49:02.302Z",
+      "success": true,
+      "purpose": "Fix phone number constraint for Nigerian phone numbers"
+    },
+    {
+      "originalPath": "fix_superuser_access.sql",
+      "archivePath": "docs\\archived\\sql\\fix_superuser_access.sql",
+      "timestamp": "2025-12-09T16:49:15.202Z",
+      "success": true,
+      "purpose": "Fix superuser access permissions"
+    },
+    {
+      "originalPath": "fix_user_operations.sql",
+      "archivePath": "docs\\archived\\sql\\fix_user_operations.sql",
+      "timestamp": "2025-12-09T16:49:32.802Z",
+      "success": true,
+      "purpose": "Fix user operations and permissions"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\add_date_of_birth.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\add_date_of_birth.sql",
+      "timestamp": "2025-12-09T12:18:57.173Z",
+      "success": true,
+      "purpose": "Supabase migration: add_date_of_birth.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\add_indexes.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\add_indexes.sql",
+      "timestamp": "2025-12-09T12:18:57.183Z",
+      "success": true,
+      "purpose": "Supabase migration: add_indexes.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\add_indexes_fixed.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\add_indexes_fixed.sql",
+      "timestamp": "2025-12-09T12:18:57.191Z",
+      "success": true,
+      "purpose": "Supabase migration: add_indexes_fixed.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\add_missing_sync_functions.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\add_missing_sync_functions.sql",
+      "timestamp": "2025-12-09T12:18:57.198Z",
+      "success": true,
+      "purpose": "Supabase migration: add_missing_sync_functions.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\add_popsabey_as_superadmin.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\add_popsabey_as_superadmin.sql",
+      "timestamp": "2025-12-09T12:18:57.203Z",
+      "success": true,
+      "purpose": "Supabase migration: add_popsabey_as_superadmin.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\add_superadmin_function.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\add_superadmin_function.sql",
+      "timestamp": "2025-12-09T12:18:57.207Z",
+      "success": true,
+      "purpose": "Supabase migration: add_superadmin_function.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\add_title_column.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\add_title_column.sql",
+      "timestamp": "2025-12-09T12:18:57.211Z",
+      "success": true,
+      "purpose": "Supabase migration: add_title_column.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\add_userid_column.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\add_userid_column.sql",
+      "timestamp": "2025-12-09T12:18:57.215Z",
+      "success": true,
+      "purpose": "Supabase migration: add_userid_column.sql"
+    },
+    {
+      "originalPath": "archive-report-supabase.json",
+      "archivePath": "docs\\archived\\sql\\migrations\\archive-report-supabase.json",
+      "timestamp": "2025-12-09T16:51:49.871Z",
+      "success": true
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\check_and_fix_super_admins.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\check_and_fix_super_admins.sql",
+      "timestamp": "2025-12-09T12:18:57.226Z",
+      "success": true,
+      "purpose": "Supabase migration: check_and_fix_super_admins.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\church_units_update.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\church_units_update.sql",
+      "timestamp": "2025-12-09T12:18:57.231Z",
+      "success": true,
+      "purpose": "Supabase migration: church_units_update.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\fix_list_super_admins.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\fix_list_super_admins.sql",
+      "timestamp": "2025-12-09T12:18:57.240Z",
+      "success": true,
+      "purpose": "Supabase migration: fix_list_super_admins.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\fix_superadmin_function.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\fix_superadmin_function.sql",
+      "timestamp": "2025-12-09T12:18:57.253Z",
+      "success": true,
+      "purpose": "Supabase migration: fix_superadmin_function.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\fix_superadmin_function_complete.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\fix_superadmin_function_complete.sql",
+      "timestamp": "2025-12-09T12:18:57.260Z",
+      "success": true,
+      "purpose": "Supabase migration: fix_superadmin_function_complete.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\fix_superadmin_function_with_drops.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\fix_superadmin_function_with_drops.sql",
+      "timestamp": "2025-12-09T12:18:57.267Z",
+      "success": true,
+      "purpose": "Supabase migration: fix_superadmin_function_with_drops.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\fix_super_admins_simple.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\fix_super_admins_simple.sql",
+      "timestamp": "2025-12-09T12:18:57.247Z",
+      "success": true,
+      "purpose": "Supabase migration: fix_super_admins_simple.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\fix_super_admins_with_hardcoded.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\fix_super_admins_with_hardcoded.sql",
+      "timestamp": "2025-12-09T12:18:57.251Z",
+      "success": true,
+      "purpose": "Supabase migration: fix_super_admins_with_hardcoded.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\fix_userid_constraint.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\fix_userid_constraint.sql",
+      "timestamp": "2025-12-09T12:18:57.277Z",
+      "success": true,
+      "purpose": "Supabase migration: fix_userid_constraint.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\fix_userid_constraint_simple.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\fix_userid_constraint_simple.sql",
+      "timestamp": "2025-12-09T12:18:57.284Z",
+      "success": true,
+      "purpose": "Supabase migration: fix_userid_constraint_simple.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\fix_user_roles_rls.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\fix_user_roles_rls.sql",
+      "timestamp": "2025-12-09T12:18:57.273Z",
+      "success": true,
+      "purpose": "Supabase migration: fix_user_roles_rls.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\profile_schema_update.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\profile_schema_update.sql",
+      "timestamp": "2025-12-09T12:18:57.289Z",
+      "success": true,
+      "purpose": "Supabase migration: profile_schema_update.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\rename_tof_to_cloventongues.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\rename_tof_to_cloventongues.sql",
+      "timestamp": "2025-12-09T12:18:57.296Z",
+      "success": true,
+      "purpose": "Supabase migration: rename_tof_to_cloventongues.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\schema_updates.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\schema_updates.sql",
+      "timestamp": "2025-12-09T12:18:57.302Z",
+      "success": true,
+      "purpose": "Supabase migration: schema_updates.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\standardize_fields.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\standardize_fields.sql",
+      "timestamp": "2025-12-09T12:18:57.302Z",
+      "success": true,
+      "purpose": "Supabase migration: standardize_fields.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\standardize_fields_improved.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\standardize_fields_improved.sql",
+      "timestamp": "2025-12-09T12:18:57.312Z",
+      "success": true,
+      "purpose": "Supabase migration: standardize_fields_improved.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\standardize_role_management.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\standardize_role_management.sql",
+      "timestamp": "2025-12-09T12:18:57.319Z",
+      "success": true,
+      "purpose": "Supabase migration: standardize_role_management.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\sync_auth_users_complete.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\sync_auth_users_complete.sql",
+      "timestamp": "2025-12-09T12:18:57.323Z",
+      "success": true,
+      "purpose": "Supabase migration: sync_auth_users_complete.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\sync_profiles_to_members.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\sync_profiles_to_members.sql",
+      "timestamp": "2025-12-09T12:18:57.327Z",
+      "success": true,
+      "purpose": "Supabase migration: sync_profiles_to_members.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\triggers.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\triggers.sql",
+      "timestamp": "2025-12-09T12:18:57.331Z",
+      "success": true,
+      "purpose": "Supabase migration: triggers.sql"
+    },
+    {
+      "originalPath": "src\\integrations\\supabase\\trigger_check_function.sql",
+      "archivePath": "docs\\archived\\sql\\migrations\\trigger_check_function.sql",
+      "timestamp": "2025-12-09T12:18:57.331Z",
+      "success": true,
+      "purpose": "Supabase migration: trigger_check_function.sql"
+    },
+    {
+      "originalPath": "simple_phone_fix.sql",
+      "archivePath": "docs\\archived\\sql\\simple_phone_fix.sql",
+      "timestamp": "2025-12-09T16:49:33.127Z",
+      "success": true,
+      "purpose": "Simple phone validation fix"
+    },
+    {
+      "originalPath": "supabase\\add_admin_columns_to_profiles.sql",
+      "archivePath": "docs\\archived\\sql\\supabase\\add_admin_columns_to_profiles.sql",
+      "timestamp": "2025-12-09T12:18:57.753Z",
+      "success": true,
+      "purpose": "Supabase setup: add_admin_columns_to_profiles.sql"
+    },
+    {
+      "originalPath": "supabase\\check_profiles_structure.sql",
+      "archivePath": "docs\\archived\\sql\\supabase\\check_profiles_structure.sql",
+      "timestamp": "2025-12-09T12:18:57.761Z",
+      "success": true,
+      "purpose": "Supabase setup: check_profiles_structure.sql"
+    },
+    {
+      "originalPath": "supabase\\create_events_table.sql",
+      "archivePath": "docs\\archived\\sql\\supabase\\create_events_table.sql",
+      "timestamp": "2025-12-09T12:18:57.785Z",
+      "success": true,
+      "purpose": "Supabase setup: create_events_table.sql"
+    },
+    {
+      "originalPath": "supabase\\create_events_table_fixed.sql",
+      "archivePath": "docs\\archived\\sql\\supabase\\create_events_table_fixed.sql",
+      "timestamp": "2025-12-09T12:18:57.792Z",
+      "success": true,
+      "purpose": "Supabase setup: create_events_table_fixed.sql"
+    },
+    {
+      "originalPath": "supabase\\create_events_table_with_admin_roles.sql",
+      "archivePath": "docs\\archived\\sql\\supabase\\create_events_table_with_admin_roles.sql",
+      "timestamp": "2025-12-09T12:18:57.801Z",
+      "success": true,
+      "purpose": "Supabase setup: create_events_table_with_admin_roles.sql"
+    },
+    {
+      "originalPath": "supabase\\create_rpc_functions.sql",
+      "archivePath": "docs\\archived\\sql\\supabase\\create_rpc_functions.sql",
+      "timestamp": "2025-12-09T12:18:57.807Z",
+      "success": true,
+      "purpose": "Supabase setup: create_rpc_functions.sql"
+    },
+    {
+      "originalPath": "supabase\\emergency_signup_fix.sql",
+      "archivePath": "docs\\archived\\sql\\supabase\\emergency_signup_fix.sql",
+      "timestamp": "2025-12-09T12:18:57.816Z",
+      "success": true,
+      "purpose": "Supabase setup: emergency_signup_fix.sql"
+    },
+    {
+      "originalPath": "supabase\\fix_signup_issues.sql",
+      "archivePath": "docs\\archived\\sql\\supabase\\fix_signup_issues.sql",
+      "timestamp": "2025-12-09T12:18:57.822Z",
+      "success": true,
+      "purpose": "Supabase setup: fix_signup_issues.sql"
+    },
+    {
+      "originalPath": "supabase\\permanent_signup_fix.sql",
+      "archivePath": "docs\\archived\\sql\\supabase\\permanent_signup_fix.sql",
+      "timestamp": "2025-12-09T12:18:57.831Z",
+      "success": true,
+      "purpose": "Supabase setup: permanent_signup_fix.sql"
+    },
+    {
+      "originalPath": "supabase\\quick_signup_fix.sql",
+      "archivePath": "docs\\archived\\sql\\supabase\\quick_signup_fix.sql",
+      "timestamp": "2025-12-09T12:18:57.837Z",
+      "success": true,
+      "purpose": "Supabase setup: quick_signup_fix.sql"
+    },
+    {
+      "originalPath": "supabase\\setup_storage_bucket.sql",
+      "archivePath": "docs\\archived\\sql\\supabase\\setup_storage_bucket.sql",
+      "timestamp": "2025-12-09T12:18:57.844Z",
+      "success": true,
+      "purpose": "Supabase setup: setup_storage_bucket.sql"
+    }
+  ],
+  "summary": {
+    "totalFiles": 87,
+    "totalSize": 416012,
+    "byCategory": {
+      "backups": 7,
+      "components": 5,
+      "html-tests": 4,
+      "markdown-docs": 12,
+      "pages": 8,
+      "scripts": 4,
+      "sql": 47
+    }
+  }
+}

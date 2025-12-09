@@ -1,0 +1,179 @@
+{
+  "timestamp": "2025-09-30T12:48:08.403Z",
+  "members": [
+    {
+      "id": "207ee712-cf69-4175-8eeb-7e344dec4da9",
+      "fullname": "Pastor Ojide Lawrence",
+      "email": "ojidelawrence@gmail.com",
+      "phone": null,
+      "address": null,
+      "category": "Pastors",
+      "title": null,
+      "assignedto": null,
+      "churchunit": "Main Church",
+      "churchunits": [
+        "Main Church",
+        "Leadership"
+      ],
+      "auxanogroup": null,
+      "joindate": "2025-09-30",
+      "notes": null,
+      "isactive": true,
+      "userid": null,
+      "created_at": "2025-09-30T12:34:48.513317+00:00",
+      "updated_at": "2025-09-30T12:34:48.513317+00:00"
+    },
+    {
+      "id": "cb8c51bb-6b65-4e2d-a180-dc765bd33240",
+      "fullname": "Pastor John Smith",
+      "email": "pastor.john@glm.org",
+      "phone": null,
+      "address": null,
+      "category": "Pastors",
+      "title": null,
+      "assignedto": null,
+      "churchunit": "Youth Ministry",
+      "churchunits": [
+        "Youth Ministry",
+        "Discipleship"
+      ],
+      "auxanogroup": null,
+      "joindate": "2025-09-30",
+      "notes": null,
+      "isactive": true,
+      "userid": null,
+      "created_at": "2025-09-30T12:34:48.513317+00:00",
+      "updated_at": "2025-09-30T12:34:48.513317+00:00"
+    },
+    {
+      "id": "4d27f4af-4a25-404c-b416-efe6a76506bf",
+      "fullname": "Sister Mary Johnson",
+      "email": "mary.johnson@glm.org",
+      "phone": null,
+      "address": null,
+      "category": "Members",
+      "title": null,
+      "assignedto": null,
+      "churchunit": "3H Media",
+      "churchunits": [
+        "3H Media"
+      ],
+      "auxanogroup": null,
+      "joindate": "2025-09-30",
+      "notes": null,
+      "isactive": true,
+      "userid": null,
+      "created_at": "2025-09-30T12:34:48.513317+00:00",
+      "updated_at": "2025-09-30T12:34:48.513317+00:00"
+    },
+    {
+      "id": "d5d168e1-13a4-4793-b8f9-e0440a2ce043",
+      "fullname": "Brother David Wilson",
+      "email": "david.wilson@glm.org",
+      "phone": null,
+      "address": null,
+      "category": "Members",
+      "title": null,
+      "assignedto": null,
+      "churchunit": "3H Music",
+      "churchunits": [
+        "3H Music",
+        "Praise Feet"
+      ],
+      "auxanogroup": null,
+      "joindate": "2025-09-30",
+      "notes": null,
+      "isactive": true,
+      "userid": null,
+      "created_at": "2025-09-30T12:34:48.513317+00:00",
+      "updated_at": "2025-09-30T12:34:48.513317+00:00"
+    },
+    {
+      "id": "831abe66-d46b-4b31-84fb-2556af560a53",
+      "fullname": "Elder Sarah Brown",
+      "email": "sarah.brown@glm.org",
+      "phone": null,
+      "address": null,
+      "category": "Members",
+      "title": null,
+      "assignedto": null,
+      "churchunit": "TOF",
+      "churchunits": [
+        "TOF",
+        "Leadership"
+      ],
+      "auxanogroup": null,
+      "joindate": "2025-09-30",
+      "notes": null,
+      "isactive": true,
+      "userid": null,
+      "created_at": "2025-09-30T12:34:48.513317+00:00",
+      "updated_at": "2025-09-30T12:34:48.513317+00:00"
+    },
+    {
+      "id": "e9f8434e-1fd4-461f-902f-6e3ded1ce42f",
+      "fullname": "Pastor Michael Davis",
+      "email": "pastor.michael@glm.org",
+      "phone": null,
+      "address": null,
+      "category": "Pastors",
+      "title": null,
+      "assignedto": null,
+      "churchunit": "Discipleship",
+      "churchunits": [
+        "Discipleship",
+        "Teaching"
+      ],
+      "auxanogroup": null,
+      "joindate": "2025-09-30",
+      "notes": null,
+      "isactive": true,
+      "userid": null,
+      "created_at": "2025-09-30T12:34:48.513317+00:00",
+      "updated_at": "2025-09-30T12:34:48.513317+00:00"
+    },
+    {
+      "id": "d27c1d63-4c7c-443f-92a5-a02c8f11bc37",
+      "fullname": "Sister Grace Thompson",
+      "email": "grace.thompson@glm.org",
+      "phone": null,
+      "address": null,
+      "category": "Members",
+      "title": null,
+      "assignedto": null,
+      "churchunit": "Cloven Tongues",
+      "churchunits": [
+        "Cloven Tongues"
+      ],
+      "auxanogroup": null,
+      "joindate": "2025-09-30",
+      "notes": null,
+      "isactive": true,
+      "userid": null,
+      "created_at": "2025-09-30T12:34:48.513317+00:00",
+      "updated_at": "2025-09-30T12:34:48.513317+00:00"
+    },
+    {
+      "id": "78d97745-6561-43b2-b218-0b81ea1751ba",
+      "fullname": "Brother James Anderson",
+      "email": "james.anderson@glm.org",
+      "phone": null,
+      "address": null,
+      "category": "Members",
+      "title": null,
+      "assignedto": null,
+      "churchunit": "3H Security",
+      "churchunits": [
+        "3H Security"
+      ],
+      "auxanogroup": null,
+      "joindate": "2025-09-30",
+      "notes": null,
+      "isactive": true,
+      "userid": null,
+      "created_at": "2025-09-30T12:34:48.513317+00:00",
+      "updated_at": "2025-09-30T12:34:48.513317+00:00"
+    }
+  ],
+  "schema_version": "current"
+}
