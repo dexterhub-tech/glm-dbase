@@ -228,12 +228,14 @@
 - [x] 8. Generate archive manifest
 
 
+
   - Create comprehensive manifest.json in docs/archived/
   - Include original paths, archive paths, timestamps
   - Add summary statistics (total files, sizes, categories)
   - _Requirements: 2.5_
 
-- [ ] 9. Checkpoint - Verify archival before deletion
+- [-] 9. Checkpoint - Verify archival before deletion
+
 
   - Ensure all tests pass, ask the user if questions arise.
   - Review manifest with user
