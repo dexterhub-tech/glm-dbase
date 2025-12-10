@@ -65,22 +65,35 @@ export async function login(email: string, password: string): Promise<{
   };
 }
 
+import { supabase } from "@/integrations/supabase/client";
+
 export async function getCurrentUser(): Promise<CurrentUser> {
-  const token = getAccessToken();
-  if (!token) throw new Error('Not authenticated');
+  const { data: { user }, error } = await supabase.auth.getUser();
 
-  const response = await fetch(`${API_BASE_URL}/api/users/me`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  });
+  if (error || !user) throw new Error('Not authenticated');
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch current user');
-  }
+  // Also try to get profile data if it exists
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
 
-  const json = await response.json();
-  return json?.data as CurrentUser;
+  // Fetch role from user_roles
+  const { data: roleData } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', user.id)
+    .single();
+
+  // Map Supabase user/profile to CurrentUser type
+  return {
+    _id: user.id,
+    email: user.email || '',
+    role: roleData?.role || 'user',
+    fullName: profile?.full_name || '',
+    isActive: true, // Default to true if logged in
+  };
 }
 
 

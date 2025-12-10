@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { getAccessToken, getCurrentUser, clearAccessToken } from '@/utils/authApi';
 import type { CurrentUser } from '@/utils/authApi';
+import { supabase } from "@/integrations/supabase/client";
 
 interface AuthContextType {
   user: CurrentUser | null;
@@ -16,8 +17,8 @@ const AuthContext = createContext<AuthContextType>({
   isLoading: true,
   isAdmin: false,
   isSuperUser: false,
-  refresh: async () => {},
-  logout: () => {},
+  refresh: async () => { },
+  logout: () => { },
 });
 
 export const useAuth = () => {
@@ -41,29 +42,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsSuperUser(role ? superRoles.includes(role) : false);
   };
 
+
+
   const refresh = async () => {
     setIsLoading(true);
     try {
-      const token = getAccessToken();
-      if (!token) {
-        setUser(null);
-        setIsAdmin(false);
-        setIsSuperUser(false);
-        return;
-      }
       const current = await getCurrentUser();
       setUser(current);
       computeRoles(current.role);
     } catch (e) {
-            setUser(null);
-            setIsAdmin(false);
-            setIsSuperUser(false);
+      setUser(null);
+      setIsAdmin(false);
+      setIsSuperUser(false);
     } finally {
-          setIsLoading(false);
-        }
+      setIsLoading(false);
+    }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
     clearAccessToken();
     setUser(null);
     setIsAdmin(false);
@@ -71,12 +68,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    let mounted = true;
-    (async () => {
-      await refresh();
-      if (!mounted) return;
-    })();
-    return () => { mounted = false; };
+    // Initial fetch
+    refresh();
+
+    // Listen for changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        refresh();
+      } else {
+        setUser(null);
+        setIsAdmin(false);
+        setIsSuperUser(false);
+        setIsLoading(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const value = {

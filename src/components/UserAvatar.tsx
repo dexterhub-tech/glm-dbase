@@ -15,8 +15,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export const UserAvatar = () => {
-  const { user, profile, isAdmin, isSuperUser } = useAuth();
+export const UserAvatar = ({ className }: { className?: string }) => {
+  const { user, isAdmin, isSuperUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -28,7 +28,7 @@ export const UserAvatar = () => {
   const effectiveIsAdmin = isAdmin || storedAdminStatus;
   const effectiveIsSuperUser = isSuperUser || storedSuperUserStatus;
 
-  const getInitials = (name: string | null) => {
+  const getInitials = (name: string | undefined | null) => {
     if (!name) return "U";
     return name
       .split(" ")
@@ -53,7 +53,7 @@ export const UserAvatar = () => {
       sessionStorage.removeItem('glm-auth-token');
 
       // Clear any session cookies
-      document.cookie.split(";").forEach(function(c) {
+      document.cookie.split(";").forEach(function (c) {
         document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
       });
 
@@ -80,16 +80,16 @@ export const UserAvatar = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="h-9 w-9 cursor-pointer border-2 border-white hover:border-gray-200 transition-colors">
+        <Avatar className={`cursor-pointer border-2 border-white hover:border-gray-200 transition-colors ${className || "h-9 w-9"}`}>
           <AvatarFallback className="bg-blue-600 text-white">
-            {getInitials(profile?.full_name)}
+            {getInitials(user.fullName)}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{profile?.full_name}</p>
+            <p className="text-sm font-medium leading-none">{user.fullName}</p>
             <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
           </div>
         </DropdownMenuLabel>

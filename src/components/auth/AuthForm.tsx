@@ -15,6 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { setAccessToken } from "@/utils/authApi";
 import { isValidPhoneNumber, getPhoneValidationMessage } from "@/utils/phoneValidation";
 import axios from 'axios'
+import { supabase } from "@/integrations/supabase/client";
 
 
 export const AuthForm = () => {
@@ -169,8 +170,8 @@ export const AuthForm = () => {
           email: email,
           password: password,
         })
-   
-        if(resp.data?.data?.accessToken) {
+
+        if (resp.data?.data?.accessToken) {
           navigate('/admin-access');
         }
       } catch (error) {
@@ -179,21 +180,25 @@ export const AuthForm = () => {
       }
     } else {
       try {
-        const resp = await axios.post('https://church-management-api-p709.onrender.com/api/auth/login', { email, password });
-        const token = resp.data?.data?.accessToken;
-        const role = resp.data?.data?.user?.role;
-        if (!token) throw new Error('No token returned');
-        setAccessToken(token);
-        const adminRole = ['admin', 'superadmin'];
-        console.log('User', resp)
-        if (adminRole.includes(role)) {
-          navigate('/admin-access');
-        } else {
-          navigate(returnTo || '/');
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) {
+          throw error;
         }
-      } catch (error) {
+
+        if (data.session) {
+          if (isAdminLogin) {
+            navigate('/admin-access');
+          } else {
+            navigate(returnTo || '/');
+          }
+        }
+      } catch (error: any) {
         clearErrors();
-        setErrorMessage('Invalid email or password');
+        setErrorMessage(error.message || 'Invalid email or password');
       }
     }
   };

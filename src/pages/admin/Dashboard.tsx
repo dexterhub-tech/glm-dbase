@@ -16,7 +16,7 @@ const DashboardContent = lazy(() => import("@/components/admin/dashboard/Dashboa
 const AdminStats = lazy(() => import("@/components/admin/dashboard/AdminStatsSimple"));
 
 const AdminDashboard = () => {
-  const { user, isAdmin, isSuperUser, isLoading, profile } = useAuth();
+  const { user, isAdmin, isSuperUser, isLoading } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
@@ -98,17 +98,17 @@ const AdminDashboard = () => {
 
       const hasAdminAccess = isAdmin || isSuperUser || storedSuperUserStatus || storedAdminStatus || isAdminEmail;
 
-      // if (!user && !storedSuperUserStatus && !storedAdminStatus) {
-      //   console.log('No user found, redirecting to auth page');
-      //   navigate("/auth");
-      //   return;
-      // }
+      if (!user && !storedSuperUserStatus && !storedAdminStatus) {
+        console.log('No user found, redirecting to auth page');
+        navigate("/auth");
+        return;
+      }
 
-      // if (user && !hasAdminAccess) {
-      //   console.log('User is not admin, redirecting to auth page');
-      //   navigate("/auth");
-      //   return;
-      // }
+      if (user && !hasAdminAccess) {
+        console.log('User is not admin, redirecting to auth page');
+        navigate("/auth");
+        return;
+      }
 
       // If user has admin email but no stored status, grant access
       if (user && isAdminEmail && !storedAdminStatus) {
@@ -196,7 +196,7 @@ const AdminDashboard = () => {
     ${sidebarOpen ? 'translate-x-0 left-4' : '-translate-x-full'}
     md:translate-x-0
   `}>
-       {isMobile && sidebarOpen && (
+        {isMobile && sidebarOpen && (
           <Button
             variant="ghost"
             size="icon"
@@ -243,7 +243,7 @@ const AdminDashboard = () => {
             </h1>
 
             <div className="flex items-center space-x-3 mb-2">
-              <UserAvatar user={user} className="h-12 w-12" />
+              <UserAvatar className="h-12 w-12" />
             </div>
             {/* <div className="w-10" /> Spacer for alignment */}
           </div>
