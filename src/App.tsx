@@ -9,6 +9,11 @@ import { useEffect, useState, lazy, Suspense } from "react";
 import { useAOS } from "@/hooks/useAOS";
 import 'aos/dist/aos.css';
 import { createQueryClient } from "@/lib/react-query-config";
+import RouteGuard from "@/components/auth/RouteGuard";
+import AuthGuard from "@/components/auth/AuthGuard";
+import EnhancedRouteProtection from "@/components/auth/EnhancedRouteProtection";
+import RouteProtectionProvider from "@/components/auth/RouteProtectionManager";
+import { routeProtectionConfig } from "@/config/routeConfig";
 
 // Lazy load pages for code splitting
 // Lazy load pages for code splitting
@@ -55,41 +60,330 @@ const AppContent = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow pt-0">
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
-            <Route path="/" element={<AdminDashboard />} />
-            {/* Auth Routes */}
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/auth/login" element={<AuthLogin />} />
-            <Route path="/auth/signup" element={<AuthSignup />} />
-            <Route path="/auth/callback" element={<AuthCallback />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/admin-access" element={<AdminAccess />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/members" element={<AdminDashboard />} />
-            <Route path="/admin/pastors" element={<AdminDashboard />} />
-            <Route path="/admin/pastors/:pastorId" element={<AdminDashboard />} />
-            <Route path="/admin/events" element={<AdminDashboard />} />
-            <Route path="/admin/sermons" element={<AdminDashboard />} />
-            <Route path="/admin/settings" element={<AdminDashboard />} />
-            <Route path="/admin/users" element={<AdminDashboard />} />
-            <Route path="/admin/system" element={<AdminDashboard />} />
-            <Route path="/admin/profile" element={<AdminDashboard />} />
-            {/* Church Units Routes */}
-            <Route path="/admin/units/3hmedia" element={<AdminDashboard />} />
-            <Route path="/admin/units/3hmusic" element={<AdminDashboard />} />
-            <Route path="/admin/units/3hmovies" element={<AdminDashboard />} />
-            <Route path="/admin/units/3hsecurity" element={<AdminDashboard />} />
-            <Route path="/admin/units/discipleship" element={<AdminDashboard />} />
-            <Route path="/admin/units/praisefeet" element={<AdminDashboard />} />
-            <Route path="/admin/units/ushering" element={<AdminDashboard />} />
-            <Route path="/admin/units/sanitation" element={<AdminDashboard />} />
-            <Route path="/admin/units/tof" element={<AdminDashboard />} />
-            <Route path="/admin/units/cloventongues" element={<AdminDashboard />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
+        <RouteProtectionProvider
+          defaultRedirectPath="/auth/login"
+          onUnauthorizedAccess={(path, reason) => {
+            console.warn(`Unauthorized access attempt to ${path}: ${reason}`);
+            // Could dispatch analytics event here
+          }}
+          onAccessGranted={(path, config) => {
+            console.log(`Access granted to ${path}`, config);
+            // Could dispatch analytics event here
+          }}
+        >
+          <EnhancedRouteProtection
+            onAuthRequired={(path, reason) => {
+              console.log(`Authentication required for ${path}: ${reason}`);
+            }}
+            onAccessDenied={(path, reason) => {
+              console.warn(`Access denied to ${path}: ${reason}`);
+            }}
+            onRedirect={(from, to, reason) => {
+              console.log(`Redirecting from ${from} to ${to}: ${reason}`);
+            }}
+          >
+            <Suspense fallback={<PageLoader />}>
+            <Routes>
+              {/* Public Auth Routes */}
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/auth/login" element={<AuthLogin />} />
+              <Route path="/auth/signup" element={<AuthSignup />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
+              
+              {/* Protected User Routes */}
+              <Route 
+                path="/profile" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="update_own_profile"
+                  >
+                    <Profile />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/settings" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="update_own_profile"
+                  >
+                    <Settings />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin-access" 
+                element={
+                  <AuthGuard requireAuth={true}>
+                    <AdminAccess />
+                  </AuthGuard>
+                } 
+              />
+              
+              {/* Protected Admin Routes */}
+              <Route 
+                path="/" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="view_admin_dashboard"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="view_admin_dashboard"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/members" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="manage_members"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/pastors" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="manage_members"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/pastors/:pastorId" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="manage_members"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/events" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="manage_events"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/sermons" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="manage_events"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/settings" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="system_admin"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/users" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="manage_members"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/system" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="system_admin"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/profile" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="view_admin_dashboard"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              
+              {/* Church Units Routes */}
+              <Route 
+                path="/admin/units/3hmedia" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="manage_members"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/units/3hmusic" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="manage_members"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/units/3hmovies" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="manage_members"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/units/3hsecurity" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="manage_members"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/units/discipleship" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="manage_members"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/units/praisefeet" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="manage_members"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/units/ushering" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="manage_members"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/units/sanitation" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="manage_members"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/units/tof" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="manage_members"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/admin/units/cloventongues" 
+                element={
+                  <AuthGuard 
+                    requireAuth={true} 
+                    requiredPermission="manage_members"
+                    reVerifyForAdmin={true}
+                  >
+                    <AdminDashboard />
+                  </AuthGuard>
+                } 
+              />
+              
+              {/* Fallback route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+          </EnhancedRouteProtection>
+        </RouteProtectionProvider>
       </main>
     </div>
   );

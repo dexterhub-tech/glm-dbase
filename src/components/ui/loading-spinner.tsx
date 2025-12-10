@@ -27,10 +27,20 @@ export function LoadingSpinner({
   );
 }
 
-export function PageLoader() {
+interface PageLoaderProps {
+  message?: string;
+  size?: "sm" | "md" | "lg" | "xl";
+  className?: string;
+}
+
+export function PageLoader({ 
+  message = "Loading...", 
+  size = "lg",
+  className 
+}: PageLoaderProps) {
   return (
-    <div className="flex h-[50vh] w-full items-center justify-center">
-      <LoadingSpinner size="lg" text="Loading..." />
+    <div className={cn("flex h-[50vh] w-full items-center justify-center", className)}>
+      <LoadingSpinner size={size} text={message} />
     </div>
   );
 }

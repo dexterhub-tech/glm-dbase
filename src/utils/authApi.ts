@@ -77,14 +77,14 @@ export async function getCurrentUser(): Promise<CurrentUser> {
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
 
   // Fetch role from user_roles
   const { data: roleData } = await supabase
     .from('user_roles')
     .select('role')
     .eq('user_id', user.id)
-    .single();
+    .maybeSingle();
 
   // Map Supabase user/profile to CurrentUser type
   return {

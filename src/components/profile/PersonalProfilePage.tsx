@@ -11,6 +11,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { ProfileCompletionPrompt } from "./ProfileCompletionPrompt";
+import { useProfileData } from "@/hooks/useProfileData";
+import { 
+  applyProfileDefaults, 
+  validateAndSanitizeProfile,
+  getProfileFieldDisplay,
+  type ProfileData 
+} from "@/utils/profileDataHandling";
 
 import { 
   Form, 
@@ -131,7 +139,7 @@ export const PersonalProfilePage = () => {
     },
   });
 
-// Load member profile using backend API
+// Load member profile using backend API with enhanced data handling
 const loadProfile = async () => {
   if (!user?.email) return;
 
@@ -147,15 +155,15 @@ const loadProfile = async () => {
     );
     
     console.log("isMember", res.data?.data);
-    // if (!res.data) {
-    //   throw new Error('Failed to fetch member profile');
-    // }
     const member = res.data.data as any | undefined;
     console.log("member", member);
+    
     if (!member) {
       setNeedsCreation(true);
-      form.reset({
+      // Apply default values for new profile creation
+      const defaultProfileData = applyProfileDefaults({
         fullname: "",
+        email: user?.email || "",
         phone: "",
         address: "",
         date_of_birth: "1990-07-12",
@@ -164,41 +172,112 @@ const loadProfile = async () => {
         bio: "",
         genotype: "AA",
       });
+      
+      form.reset(defaultProfileData);
       return;
     }
 
-    // If member exists, map and load
-    const profileData: MemberProfile = {
-      id: member._id,
-      user_id: member.user_id || user._id || '',
-      email: member.email,
+    // If member exists, map and load with validation and defaults
+    const rawProfileData: Partial<ProfileData> = {
       fullname: member.fullname || member.fullName || '',
+      email: member.email || user?.email || '',
       phone: member.phone || '',
       address: member.address || '',
       date_of_birth: member.date_of_birth || '',
-      gender: member.gender || '',
-      title: member.title,
-      category: member.category,
-      churchunit: member.church_unit,
-      churchunits: [],
-      assigned_pastor_name: undefined,
-      joindate: member.join_date,
-      created_at: member.created_at,
-      updated_at: member.updated_at,
+      gender: member.gender as "male" | "female" | "other" || undefined,
+      occupation: member.occupation || '',
       bio: member.notes || '',
-    } as any;
+      genotype: member.genotype || '',
+      emergency_contact_name: member.emergency_contact_name || '',
+      emergency_contact_phone: member.emergency_contact_phone || '',
+      emergency_contact_relationship: member.emergency_contact_relationship || '',
+      city: member.city || '',
+      state: member.state || '',
+      postal_code: member.postal_code || '',
+      country: member.country || '',
+      baptism_date: member.baptism_date || '',
+      baptism_location: member.baptism_location || '',
+      is_baptized: member.is_baptized || false,
+      preferred_contact_method: member.preferred_contact_method as "email" | "phone" | "sms" | "whatsapp" || undefined,
+      marital_status: member.marital_status as "single" | "married" | "divorced" | "widowed" || undefined,
+    };
 
-    setProfile(profileData);
-    form.reset({
-      fullname: profileData.fullname || "",
-      phone: profileData.phone || "",
-      address: profileData.address || "",
-      date_of_birth: profileData.date_of_birth || "",
-      gender: (profileData.gender as "male" | "female" | "other") || undefined,
-      occupation: profileData.occupation || "",
-      bio: profileData.bio || "",
-      genotype: profileData.genotype || "",
-    });
+    // Validate and sanitize the profile data
+    const validation = validateAndSanitizeProfile(rawProfileData);
+    
+    if (validation.isValid && validation.data) {
+      // Create the member profile with validated data
+      const profileData: MemberProfile = {
+        id: member._id,
+        user_id: member.user_id || user._id || '',
+        email: validation.data.email,
+        fullname: validation.data.fullname,
+        phone: validation.data.phone,
+        address: validation.data.address,
+        date_of_birth: validation.data.date_of_birth,
+        gender: validation.data.gender,
+        title: member.title,
+        category: member.category,
+        churchunit: member.church_unit,
+        churchunits: [],
+        assigned_pastor_name: undefined,
+        joindate: member.join_date,
+        created_at: member.created_at,
+        updated_at: member.updated_at,
+        bio: validation.data.bio,
+        marital_status: validation.data.marital_status,
+        occupation: validation.data.occupation,
+        emergency_contact_name: validation.data.emergency_contact_name,
+        emergency_contact_phone: validation.data.emergency_contact_phone,
+        emergency_contact_relationship: validation.data.emergency_contact_relationship,
+        city: validation.data.city,
+        state: validation.data.state,
+        postal_code: validation.data.postal_code,
+        country: validation.data.country,
+        baptism_date: validation.data.baptism_date,
+        baptism_location: validation.data.baptism_location,
+        is_baptized: validation.data.is_baptized,
+        preferred_contact_method: validation.data.preferred_contact_method,
+        genotype: validation.data.genotype,
+      } as any;
+
+      setProfile(profileData);
+      form.reset(validation.data);
+    } else {
+      // If validation fails, apply defaults and show errors
+      const profileWithDefaults = applyProfileDefaults(rawProfileData);
+      const profileData: MemberProfile = {
+        id: member._id,
+        user_id: member.user_id || user._id || '',
+        email: profileWithDefaults.email,
+        fullname: profileWithDefaults.fullname,
+        phone: profileWithDefaults.phone,
+        address: profileWithDefaults.address,
+        date_of_birth: profileWithDefaults.date_of_birth,
+        gender: profileWithDefaults.gender,
+        title: member.title,
+        category: member.category,
+        churchunit: member.church_unit,
+        churchunits: [],
+        assigned_pastor_name: undefined,
+        joindate: member.join_date,
+        created_at: member.created_at,
+        updated_at: member.updated_at,
+        bio: profileWithDefaults.bio,
+      } as any;
+
+      setProfile(profileData);
+      form.reset(profileWithDefaults);
+      
+      // Show validation errors
+      if (validation.errors && Object.keys(validation.errors).length > 0) {
+        toast({
+          title: "Profile Data Issues",
+          description: "Some profile data needs attention. Please review and update.",
+          variant: "destructive",
+        });
+      }
+    }
 
   } catch (error) {
     console.error("Error loading profile:", error);
@@ -213,27 +292,56 @@ const loadProfile = async () => {
 };
 
 
-// Save profile changes via backend API
+// Save profile changes via backend API with enhanced validation
 const onSubmit = async (values: ProfileFormValues) => {
   if (!user || !profile) return;
 
   try {
     setSaving(true);
+    
+    // Validate and sanitize the form data
+    const validation = validateAndSanitizeProfile(values);
+    
+    if (!validation.isValid) {
+      // Show validation errors
+      const errorMessages = Object.values(validation.errors).join(', ');
+      toast({
+        title: "Validation Error",
+        description: `Please fix the following issues: ${errorMessages}`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     const token = getAccessToken();
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
 
+    // Use validated and sanitized data
+    const sanitizedData = validation.data!;
     const payload: any = {
-      fullname: values.fullname,
-      phone: values.phone,
-      address: values.address,
-      date_of_birth: values.date_of_birth,
-      gender: values.gender,
-      occupation: values.occupation,
-      notes: values.bio,
-      genotype: values.genotype,
+      fullname: sanitizedData.fullname,
+      phone: sanitizedData.phone,
+      address: sanitizedData.address,
+      date_of_birth: sanitizedData.date_of_birth,
+      gender: sanitizedData.gender,
+      occupation: sanitizedData.occupation,
+      notes: sanitizedData.bio,
+      genotype: sanitizedData.genotype,
+      emergency_contact_name: sanitizedData.emergency_contact_name,
+      emergency_contact_phone: sanitizedData.emergency_contact_phone,
+      emergency_contact_relationship: sanitizedData.emergency_contact_relationship,
+      city: sanitizedData.city,
+      state: sanitizedData.state,
+      postal_code: sanitizedData.postal_code,
+      country: sanitizedData.country,
+      baptism_date: sanitizedData.baptism_date,
+      baptism_location: sanitizedData.baptism_location,
+      is_baptized: sanitizedData.is_baptized,
+      preferred_contact_method: sanitizedData.preferred_contact_method,
+      marital_status: sanitizedData.marital_status,
     };
 
     const res = await fetch(`https://church-management-api-p709.onrender.com/api/members/${profile.id}`, {
@@ -249,7 +357,7 @@ const onSubmit = async (values: ProfileFormValues) => {
 
     toast({
       title: "Success",
-      description: "Profile updated successfully",
+      description: "Profile updated successfully with validated data",
     });
     setEditing(false);
     await loadProfile();
@@ -304,20 +412,42 @@ const onSubmit = async (values: ProfileFormValues) => {
                 onSubmit={form.handleSubmit(async (values) => {
                   try {
                     setSaving(true);
+                    
+                    // Validate and sanitize the form data before creation
+                    const profileData = {
+                      ...values,
+                      email: user?.email || '',
+                    };
+                    
+                    const validation = validateAndSanitizeProfile(profileData);
+                    
+                    if (!validation.isValid) {
+                      const errorMessages = Object.values(validation.errors).join(', ');
+                      toast({
+                        title: "Validation Error",
+                        description: `Please fix the following issues: ${errorMessages}`,
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+
                     const token = getAccessToken();
                     const headers: any = {
                       'Content-Type': 'application/json',
                       ...(token ? { Authorization: `Bearer ${token}` } : {}),
                     };
+                    
+                    // Use validated and sanitized data
+                    const sanitizedFormData = validation.data!;
                     const payload: any = {
-                      fullname: values.fullname,
-                      email: user?.email,
+                      fullname: sanitizedFormData.fullname,
+                      email: sanitizedFormData.email,
                       user_id: (user as any)?._id || '',
-                      phone: values.phone,
-                      address: values.address,
-                      date_of_birth: values.date_of_birth ? new Date(values.date_of_birth).toISOString() : "1990-07-12T00:00:00.000Z",
-                      gender: values.gender || "male",
-                      genotype: values.genotype || "AA",
+                      phone: sanitizedFormData.phone,
+                      address: sanitizedFormData.address,
+                      date_of_birth: sanitizedFormData.date_of_birth ? new Date(sanitizedFormData.date_of_birth).toISOString() : "1990-07-12T00:00:00.000Z",
+                      gender: sanitizedFormData.gender || "male",
+                      genotype: sanitizedFormData.genotype || "AA",
                       category: createCategory || "adult",
                       title: createTitle || "Brother",
                       join_date: createJoinDate ? new Date(createJoinDate).toISOString() : "2023-09-15T00:00:00.000Z",
@@ -333,7 +463,7 @@ const onSubmit = async (values: ProfileFormValues) => {
                     }
                     const created = await res.json();
                     const m = created?.data;
-                    const profileData: MemberProfile = {
+                    const newProfileData: MemberProfile = {
                       id: m._id,
                       user_id: m.user_id || '',
                       email: m.email,
@@ -351,7 +481,7 @@ const onSubmit = async (values: ProfileFormValues) => {
                       created_at: m.created_at || new Date().toISOString(),
                       updated_at: m.updated_at || new Date().toISOString(),
                     } as any;
-                    setProfile(profileData);
+                    setProfile(newProfileData);
                     setNeedsCreation(false);
                     toast({ title: 'Profile created', description: 'Your member profile has been created.' });
                   } catch (err) {
@@ -485,6 +615,40 @@ const onSubmit = async (values: ProfileFormValues) => {
 
   return (
     <div className="container mx-auto p-6 mt-28 max-w-4xl">
+      {/* Profile Completion Prompt */}
+      {profile && (
+        <ProfileCompletionPrompt
+          profileData={{
+            fullname: profile.fullname || '',
+            email: profile.email || '',
+            phone: profile.phone,
+            address: profile.address,
+            date_of_birth: profile.date_of_birth,
+            gender: profile.gender as "male" | "female" | "other" | undefined,
+            marital_status: profile.marital_status as "single" | "married" | "divorced" | "widowed" | undefined,
+            occupation: profile.occupation,
+            bio: profile.bio,
+            emergency_contact_name: profile.emergency_contact_name,
+            emergency_contact_phone: profile.emergency_contact_phone,
+            emergency_contact_relationship: profile.emergency_contact_relationship,
+            city: profile.city,
+            state: profile.state,
+            postal_code: profile.postal_code,
+            country: profile.country,
+            baptism_date: profile.baptism_date,
+            baptism_location: profile.baptism_location,
+            is_baptized: profile.is_baptized,
+            preferred_contact_method: profile.preferred_contact_method as "email" | "phone" | "sms" | "whatsapp" | undefined,
+            genotype: profile.genotype,
+            skills_talents: profile.skills_talents || [],
+            interests: profile.interests || [],
+          }}
+          onEditProfile={() => setEditing(true)}
+          showDetailed={!editing}
+          className="mb-6"
+        />
+      )}
+
       {/* Header */}
       <div className="space-y-2 md:space-y-0 md:flex md:items-center justify-between mb-6">
         <div>
@@ -719,7 +883,7 @@ const onSubmit = async (values: ProfileFormValues) => {
                 <div>
                   <Label>Assigned Pastor</Label>
                   <Input
-                    value={profile.assigned_pastor_name || "Not assigned"}
+                    value={getProfileFieldDisplay(profile.assigned_pastor_name, 'assigned_pastor_name' as keyof ProfileData, "Not assigned")}
                     disabled
                     className="bg-muted mt-1"
                   />

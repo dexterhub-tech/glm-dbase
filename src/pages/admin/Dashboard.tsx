@@ -2,26 +2,38 @@
 import { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Menu, RefreshCw } from "lucide-react";
+import { Menu, RefreshCw, Shield, AlertTriangle } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { PageLoader } from "@/components/ui/loading-spinner";
 import { UserAvatar } from "@/components/UserAvatar";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import PermissionGuard from "@/components/auth/PermissionGuard";
+import { withAdminProtection } from "@/components/auth/withRoleProtection";
+import { withNetworkAwareness } from "@/components/auth/withNetworkAwareness";
+import { useNetworkConnectivity } from "@/hooks/useNetworkConnectivity";
+import ConnectionStatus from "@/components/ui/connection-status";
 
 // Lazy load admin components
 const AdminSidebar = lazy(() => import("@/components/admin/AdminSidebar"));
 const DashboardHeader = lazy(() => import("@/components/admin/dashboard/DashboardHeader"));
 const DashboardContent = lazy(() => import("@/components/admin/dashboard/DashboardContent"));
+const EnhancedDashboardContent = lazy(() => import("@/components/admin/dashboard/EnhancedDashboardContent"));
 const AdminStats = lazy(() => import("@/components/admin/dashboard/AdminStatsSimple"));
+const DashboardErrorBoundary = lazy(() => import("@/components/admin/dashboard/DashboardErrorBoundary"));
+const FallbackDashboard = lazy(() => import("@/components/admin/dashboard/FallbackDashboard"));
 
 const AdminDashboard = () => {
-  const { user, isAdmin, isSuperUser, isLoading } = useAuth();
+  const { user, isAdmin, isSuperUser, isLoading, userRole, reVerifyPermissions, hasPermission } = useAuth();
+  const { shouldShowOfflineMessage, hasConnectionError } = useNetworkConnectivity();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   const [loadingTimeout, setLoadingTimeout] = useState(false);
   const [forceLoaded, setForceLoaded] = useState(false);
+  const [permissionVerified, setPermissionVerified] = useState(false);
+  const [verificationError, setVerificationError] = useState<string | null>(null);
   const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
 
@@ -32,7 +44,10 @@ const AdminDashboard = () => {
     isLoading,
     loadingTimeout,
     forceLoaded,
+    permissionVerified,
     email: user?.email,
+    role: userRole?.role,
+    permissions: userRole?.permissions?.length || 0,
     storedSuperUserStatus: localStorage.getItem('glm-is-superuser') === 'true'
   });
 
@@ -79,50 +94,59 @@ const AdminDashboard = () => {
     };
   }, [isLoading, loadingTimeout, forceLoaded]);
 
-  // Redirect if not logged in or not an admin/superuser
+  // Enhanced permission verification for admin access
   useEffect(() => {
-    const checkAuth = async () => {
+    const verifyAdminAccess = async () => {
       // If we're still loading but not in a timeout state, just wait
       if (isLoading && !loadingTimeout && !forceLoaded) {
         console.log('Still loading auth state...');
         return;
       }
 
-      // Check for admin status with multiple fallbacks
-      const storedSuperUserStatus = localStorage.getItem('glm-is-superuser') === 'true';
-      const storedAdminStatus = localStorage.getItem('glm-is-admin') === 'true';
-
-      // Admin email whitelist
-      const adminEmails = ['ojidelawrence@gmail.com', 'admin@gospellabourministry.com'];
-      const isAdminEmail = user?.email && adminEmails.includes(user.email.toLowerCase());
-
-      const hasAdminAccess = isAdmin || isSuperUser || storedSuperUserStatus || storedAdminStatus || isAdminEmail;
-
-      if (!user && !storedSuperUserStatus && !storedAdminStatus) {
+      if (!user) {
         console.log('No user found, redirecting to auth page');
         navigate("/auth");
         return;
       }
 
-      if (user && !hasAdminAccess) {
-        console.log('User is not admin, redirecting to auth page');
-        navigate("/auth");
-        return;
-      }
+      try {
+        // Re-verify admin permissions for sensitive access
+        const hasAdminPermission = await reVerifyPermissions('view_admin_dashboard');
+        
+        if (!hasAdminPermission) {
+          // Check for legacy fallbacks
+          const storedSuperUserStatus = localStorage.getItem('glm-is-superuser') === 'true';
+          const storedAdminStatus = localStorage.getItem('glm-is-admin') === 'true';
+          const adminEmails = ['ojidelawrence@gmail.com', 'admin@gospellabourministry.com'];
+          const isAdminEmail = user?.email && adminEmails.includes(user.email.toLowerCase());
 
-      // If user has admin email but no stored status, grant access
-      if (user && isAdminEmail && !storedAdminStatus) {
-        localStorage.setItem('glm-is-admin', 'true');
-        if (user.email?.toLowerCase() === 'ojidelawrence@gmail.com') {
-          localStorage.setItem('glm-is-superuser', 'true');
+          const hasLegacyAccess = storedSuperUserStatus || storedAdminStatus || isAdminEmail;
+
+          if (!hasLegacyAccess) {
+            console.log('User lacks admin permissions, redirecting to access denied');
+            navigate("/admin-access");
+            return;
+          }
+
+          // Grant temporary access for legacy users but log the fallback
+          console.warn('Using legacy admin access fallback for user:', user.email);
+          setVerificationError('Using legacy access - please update your permissions');
         }
-      }
 
-      console.log('User is authorized to access admin dashboard');
+        setPermissionVerified(true);
+        console.log('Admin access verified successfully');
+
+      } catch (error: any) {
+        console.error('Error verifying admin access:', error);
+        setVerificationError(error.message);
+        
+        // Still allow access but show warning
+        setPermissionVerified(true);
+      }
     };
 
-    checkAuth();
-  }, [user, isAdmin, isSuperUser, isLoading, loadingTimeout, forceLoaded, navigate]);
+    verifyAdminAccess();
+  }, [user, isLoading, loadingTimeout, forceLoaded, navigate, reVerifyPermissions]);
 
   // Force continue function for when loading gets stuck
   const handleForceContinue = () => {
@@ -134,7 +158,7 @@ const AdminDashboard = () => {
   };
 
   // Show loading state
-  if ((isLoading && !forceLoaded) || (loadingTimeout && !forceLoaded)) {
+  if ((isLoading && !forceLoaded) || (loadingTimeout && !forceLoaded) || !permissionVerified) {
     return (
       <div className="flex flex-col min-h-screen items-center justify-center p-4 bg-gray-50">
         <div className="text-center space-y-6 max-w-md">
@@ -169,10 +193,13 @@ const AdminDashboard = () => {
                   </div>
                 </div>
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                  Preparing Admin Dashboard
+                  {permissionVerified ? 'Preparing Admin Dashboard' : 'Verifying Admin Access'}
                 </h2>
                 <p className="text-gray-600">
-                  Please wait while we verify your admin access...
+                  {permissionVerified 
+                    ? 'Please wait while we load your dashboard...'
+                    : 'Please wait while we verify your admin permissions...'
+                  }
                 </p>
               </>
             )}
@@ -182,12 +209,23 @@ const AdminDashboard = () => {
     );
   }
 
-  if (!user || (!isAdmin && !isSuperUser)) {
+  if (!user) {
     return null;
   }
 
   return (
     <div className="md:flex min-h-screen bg-gray-50">
+      {/* Permission verification warning */}
+      {verificationError && (
+        <div className="fixed top-4 right-4 z-50 max-w-md">
+          <Alert className="border-yellow-200 bg-yellow-50">
+            <AlertTriangle className="h-4 w-4 text-yellow-600" />
+            <AlertDescription className="text-yellow-800">
+              {verificationError}
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
 
       {/* Floating Sidebar */}
       <aside className={`
@@ -251,8 +289,58 @@ const AdminDashboard = () => {
 
         {/* Main Content */}
         <main className=" md:p-6 lg:p-8">
+          {/* Network connectivity status */}
+          {(shouldShowOfflineMessage() || hasConnectionError) && (
+            <div className="mb-4">
+              <ConnectionStatus 
+                showTroubleshooting={true}
+                compact={false}
+              />
+            </div>
+          )}
+
           <Suspense fallback={<PageLoader />}>
-            <DashboardContent />
+            <DashboardErrorBoundary
+              onError={(error, errorInfo) => {
+                console.error('[Dashboard] Main dashboard error:', {
+                  error: error.message,
+                  componentStack: errorInfo.componentStack,
+                });
+              }}
+              showDetails={process.env.NODE_ENV === 'development'}
+              fallback={
+                <FallbackDashboard
+                  error="Main dashboard component failed to load"
+                  onRetry={() => window.location.reload()}
+                  onRefresh={() => window.location.reload()}
+                />
+              }
+            >
+              <PermissionGuard
+                requiredPermission="view_admin_dashboard"
+                reVerifyForAdmin={true}
+                showAccessDenied={false}
+                fallbackComponent={
+                  <div className="flex items-center justify-center min-h-[400px]">
+                    <div className="text-center">
+                      <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">
+                        Dashboard Access Restricted
+                      </h3>
+                      <p className="text-gray-600 mb-4">
+                        Your dashboard access is being verified. Please wait...
+                      </p>
+                      <Button onClick={() => window.location.reload()} variant="outline">
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Refresh
+                      </Button>
+                    </div>
+                  </div>
+                }
+              >
+                <EnhancedDashboardContent />
+              </PermissionGuard>
+            </DashboardErrorBoundary>
           </Suspense>
         </main>
       </div>
@@ -260,4 +348,16 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+// Export the component with admin protection and network awareness
+const ProtectedAdminDashboard = withAdminProtection(AdminDashboard, {
+  showAccessDenied: true,
+  reVerifyForAdmin: true,
+  redirectTo: '/admin-access'
+});
+
+export default withNetworkAwareness(ProtectedAdminDashboard, {
+  showConnectionStatus: true,
+  showOfflineMessage: true,
+  showTroubleshooting: true,
+  blockWhenOffline: false, // Allow limited functionality when offline
+});

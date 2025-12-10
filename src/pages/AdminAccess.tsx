@@ -3,22 +3,85 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Crown, User, AlertCircle, RefreshCw } from "lucide-react";
+import { Shield, Crown, User, AlertCircle, RefreshCw, CheckCircle, XCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
+import { checkPermission, reVerifyAdminPermissions } from "@/utils/roleManagement";
 
 const AdminAccess = () => {
-    const { user, isAdmin, isSuperUser, isLoading } = useAuth();
+    const { user, isAdmin, isSuperUser, isLoading, userRole, reVerifyPermissions } = useAuth();
     const navigate = useNavigate();
+    const [permissionStatus, setPermissionStatus] = useState<{
+        isChecking: boolean;
+        hasAdminAccess: boolean;
+        hasSuperAccess: boolean;
+        permissions: string[];
+        lastChecked?: Date;
+        error?: string;
+    }>({
+        isChecking: false,
+        hasAdminAccess: false,
+        hasSuperAccess: false,
+        permissions: []
+    });
 
     const { toast } = useToast();
 
-    // Check localStorage for stored admin status
+    // Enhanced permission checking
+    const checkUserPermissions = async () => {
+        if (!user) {
+            setPermissionStatus({
+                isChecking: false,
+                hasAdminAccess: false,
+                hasSuperAccess: false,
+                permissions: [],
+                error: 'No user logged in'
+            });
+            return;
+        }
+
+        setPermissionStatus(prev => ({ ...prev, isChecking: true }));
+
+        try {
+            // Check multiple permission levels
+            const adminCheck = await checkPermission('view_admin_dashboard');
+            const superCheck = await checkPermission('system_admin');
+            
+            // Get current permissions from role
+            const currentPermissions = userRole?.permissions || [];
+
+            setPermissionStatus({
+                isChecking: false,
+                hasAdminAccess: adminCheck.hasPermission,
+                hasSuperAccess: superCheck.hasPermission,
+                permissions: currentPermissions,
+                lastChecked: new Date()
+            });
+
+        } catch (error: any) {
+            setPermissionStatus({
+                isChecking: false,
+                hasAdminAccess: false,
+                hasSuperAccess: false,
+                permissions: [],
+                error: error.message
+            });
+        }
+    };
+
+    // Check localStorage for stored admin status (legacy fallback)
     const storedSuperUserStatus = localStorage.getItem('glm-is-superuser') === 'true';
     const storedAdminStatus = localStorage.getItem('glm-is-admin') === 'true';
 
-    const effectiveIsAdmin = isAdmin || storedAdminStatus;
-    const effectiveIsSuperUser = isSuperUser || storedSuperUserStatus;
+    const effectiveIsAdmin = permissionStatus.hasAdminAccess || isAdmin || storedAdminStatus;
+    const effectiveIsSuperUser = permissionStatus.hasSuperAccess || isSuperUser || storedSuperUserStatus;
+
+    // Check permissions when user changes
+    useEffect(() => {
+        if (!isLoading && user) {
+            checkUserPermissions();
+        }
+    }, [user, isLoading, userRole]);
 
     useEffect(() => {
         // If user is confirmed admin/superuser, redirect to admin dashboard immediately
@@ -54,8 +117,22 @@ const AdminAccess = () => {
         }
     };
 
-    const handleRefreshAuth = () => {
-        window.location.reload();
+    const handleRefreshAuth = async () => {
+        try {
+            await reVerifyPermissions('view_admin_dashboard');
+            await checkUserPermissions();
+            
+            toast({
+                title: "Permissions Refreshed",
+                description: "Your access permissions have been updated.",
+            });
+        } catch (error: any) {
+            toast({
+                variant: "destructive",
+                title: "Refresh Failed",
+                description: error.message || "Failed to refresh permissions.",
+            });
+        }
     };
 
     if (isLoading) {
@@ -110,17 +187,60 @@ const AdminAccess = () => {
                                             <span className="text-sm">{user.email}</span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span>Admin:</span>
-                                            <span className={effectiveIsAdmin ? "text-green-600" : "text-red-600"}>
-                                                {effectiveIsAdmin ? "✅ Yes" : "❌ No"}
+                                            <span>Role:</span>
+                                            <span className="text-sm font-medium">
+                                                {userRole?.role || 'user'}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span>Admin Access:</span>
+                                            <span className={effectiveIsAdmin ? "text-green-600 flex items-center gap-1" : "text-red-600 flex items-center gap-1"}>
+                                                {effectiveIsAdmin ? (
+                                                    <>
+                                                        <CheckCircle className="h-3 w-3" />
+                                                        Yes
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <XCircle className="h-3 w-3" />
+                                                        No
+                                                    </>
+                                                )}
                                             </span>
                                         </div>
                                         <div className="flex justify-between">
                                             <span>Super Admin:</span>
-                                            <span className={effectiveIsSuperUser ? "text-[#ff0000]" : "text-red-600"}>
-                                                {effectiveIsSuperUser ? "👑 Yes" : "❌ No"}
+                                            <span className={effectiveIsSuperUser ? "text-[#ff0000] flex items-center gap-1" : "text-red-600 flex items-center gap-1"}>
+                                                {effectiveIsSuperUser ? (
+                                                    <>
+                                                        <Crown className="h-3 w-3" />
+                                                        Yes
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <XCircle className="h-3 w-3" />
+                                                        No
+                                                    </>
+                                                )}
                                             </span>
                                         </div>
+                                        {permissionStatus.permissions.length > 0 && (
+                                            <div className="pt-2 border-t">
+                                                <span className="text-xs text-gray-500">Permissions:</span>
+                                                <div className="flex flex-wrap gap-1 mt-1">
+                                                    {permissionStatus.permissions.slice(0, 3).map(permission => (
+                                                        <span key={permission} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                                            {permission.replace(/_/g, ' ')}
+                                                        </span>
+                                                    ))}
+                                                    {permissionStatus.permissions.length > 3 && (
+                                                        <span className="text-xs text-gray-500">
+                                                            +{permissionStatus.permissions.length - 3} more
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
                                     </>
                                 )}
                             </div>
