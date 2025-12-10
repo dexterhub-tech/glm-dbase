@@ -7,16 +7,13 @@ import { PasswordField } from "./PasswordField";
 import { useAuthentication } from "@/hooks/useAuthentication";
 import { AuthAlert } from "./AuthAlert";
 import { Loader2, Mail, Shield } from "lucide-react";
-import axios from 'axios';
 import { useAuth } from "@/contexts/AuthContext";
-import { setAccessToken } from "@/utils/authApi";
 import { Lock, Eye, EyeOff, Clock } from 'lucide-react'
-import { supabase } from "@/integrations/supabase/client";
 
 export const LoginForm = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user } = useAuth();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const returnTo = searchParams.get('returnTo');
   const isAdminLogin = returnTo === '/admin';
 
@@ -31,13 +28,31 @@ export const LoginForm = () => {
     loginLocked,
     lockoutEndTime,
     clearErrors,
+    signIn
   } = useAuthentication();
 
   useEffect(() => {
-    if (user && returnTo) {
-      navigate(returnTo, { replace: true });
+    console.log("[LoginForm] Auth state changed:", { 
+      hasUser: !!user, 
+      userId: user?._id, 
+      isAuthenticated,
+      authLoading,
+      returnTo,
+      isAdminLogin 
+    });
+    
+    // Only redirect if user is authenticated and not loading
+    if (isAuthenticated && user && !authLoading) {
+      if (returnTo) {
+        console.log("[LoginForm] Redirecting to returnTo:", returnTo);
+        navigate(returnTo, { replace: true });
+      } else {
+        // If user is authenticated but no returnTo, redirect to dashboard
+        console.log("[LoginForm] User authenticated, redirecting to dashboard");
+        navigate('/', { replace: true });
+      }
     }
-  }, [user, returnTo, navigate]);
+  }, [user, isAuthenticated, authLoading, returnTo, navigate, isAdminLogin]);
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -62,28 +77,8 @@ export const LoginForm = () => {
       return;
     }
 
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      if (data.session) {
-        // Auth state change will handle navigation via listener or context
-        if (isAdminLogin) {
-          navigate('/admin-access');
-        } else {
-          navigate(returnTo || '/');
-        }
-      }
-    } catch (error: any) {
-      clearErrors();
-      setErrorMessage(error.message || 'Invalid email or password');
-    }
+    const redirectPath = isAdminLogin ? '/admin-access' : (returnTo || '/');
+    await signIn(email, password, redirectPath);
   };
 
   const handleForgotPassword = () => {
@@ -189,7 +184,7 @@ export const LoginForm = () => {
                     </div>
                     <input
                       id="password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => {
                         clearErrors();

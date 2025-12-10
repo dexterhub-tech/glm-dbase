@@ -628,6 +628,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const handleAuthSuccess = async (user: CurrentUser, sessionData?: any) => {
     logAuthEvent('AUTH_SUCCESS', { userId: user._id, email: user.email, role: user.role });
+    console.log('[AuthContext] handleAuthSuccess called for user:', user._id);
     
     clearAuthTimeout();
     clearRetryTimeout();
@@ -635,6 +636,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Clear any connection errors on successful auth
     setConnectionError(null);
     
+    console.log('[AuthContext] Setting auth state to authenticated');
     setAuthState({
       user,
       isLoading: false,
@@ -643,6 +645,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       error: null,
       retryCount: 0,
     });
+    console.log('[AuthContext] Auth state updated - user should be authenticated now');
     
     // Compute roles with enhanced verification
     await computeRoles(user);
@@ -927,6 +930,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const refresh = useCallback(async () => {
     const performanceId = startMeasurement('auth_refresh', 'auth', { operation: 'refresh' });
     logAuthEvent('REFRESH_START');
+    console.log('[AuthContext] Refresh started');
     
     setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
     updateLoadingProgress('auth', 10);
@@ -934,15 +938,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       updateLoadingProgress('profile', 50);
+      console.log('[AuthContext] Getting current user...');
       
       const current = await getCurrentUser();
+      console.log('[AuthContext] Got current user:', { userId: current._id, email: current.email, role: current.role });
       
       updateLoadingProgress('dashboard', 90);
       await handleAuthSuccess(current);
+      console.log('[AuthContext] Auth success handled, user should be authenticated now');
       
       endMeasurement(performanceId, { success: true, userId: current._id });
       
     } catch (error: any) {
+      console.error('[AuthContext] Refresh error:', error);
       endMeasurement(performanceId, { success: false, error: error.message });
       logAuthEvent('REFRESH_ERROR', { operation: 'refresh' }, error);
       

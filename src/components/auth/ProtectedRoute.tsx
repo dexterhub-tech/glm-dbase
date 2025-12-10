@@ -30,7 +30,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   return (
     <Route
-      {...routeProps}
+      {...(routeProps as any)}
       element={
         <AuthGuard
           requireAuth={requireAuth}

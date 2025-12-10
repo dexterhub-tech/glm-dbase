@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach, type MockedFunction } from 'vitest';
 import EnhancedRouteProtection from './EnhancedRouteProtection';
 import { useAuth } from '@/contexts/AuthContext';
 import * as routeConfig from '@/config/routeConfig';
@@ -21,8 +21,8 @@ vi.mock('@/utils/comprehensiveLogging', () => ({
   logAuthEvent: vi.fn()
 }));
 
-const mockUseAuth = useAuth as vi.MockedFunction<typeof useAuth>;
-const mockGetRouteConfig = routeConfig.getRouteConfig as vi.MockedFunction<typeof routeConfig.getRouteConfig>;
+const mockUseAuth = useAuth as MockedFunction<typeof useAuth>;
+const mockGetRouteConfig = routeConfig.getRouteConfig as MockedFunction<typeof routeConfig.getRouteConfig>;
 
 const TestComponent = () => <div>Protected Content</div>;
 
@@ -294,7 +294,7 @@ describe('EnhancedRouteProtection', () => {
 
   it('should call onAuthRequired callback when authentication is required', async () => {
     const onAuthRequired = vi.fn();
-    
+
     mockUseAuth.mockReturnValue({
       user: null,
       isLoading: false,
@@ -358,7 +358,7 @@ describe('EnhancedRouteProtection', () => {
 
   it('should use re-verification for admin routes when configured', async () => {
     const mockReVerifyPermissions = vi.fn().mockResolvedValue(true);
-    
+
     mockUseAuth.mockReturnValue({
       user: { _id: 'user1', email: 'admin@example.com', role: 'admin' },
       isLoading: false,

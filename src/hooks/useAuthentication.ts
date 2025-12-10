@@ -14,6 +14,7 @@ export const useAuthentication = () => {
   const [lockoutEndTime, setLockoutEndTime] = useState<Date | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { refresh } = useAuth();
 
   const clearErrors = () => {
     setErrorMessage(null);
@@ -35,7 +36,7 @@ export const useAuthentication = () => {
   const clearAuthStorage = () => {
     clearAccessToken();
     sessionStorage.removeItem('glm-auth-token');
-    document.cookie.split(";").forEach(function(c) {
+    document.cookie.split(";").forEach(function (c) {
       document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
     });
   };
@@ -70,6 +71,14 @@ export const useAuthentication = () => {
       try {
         const result = await backendLogin(normalizedEmail, password);
         setAccessToken(result.accessToken);
+
+        // Wait for AuthContext to pick up the changes and update state
+        // This prevents the race condition where we navigate before isAuthenticated is true
+        await refresh();
+        
+        // Give additional time for auth state to fully propagate
+        await new Promise(resolve => setTimeout(resolve, 500));
+
       } catch (err: any) {
         // Increment login attempts on failure
         const newAttempts = loginAttempts + 1;
@@ -98,17 +107,17 @@ export const useAuthentication = () => {
         throw err;
       }
 
-      // Success - reset login attempts and navigate
+      // Success - reset login attempts
       setLoginAttempts(0);
-      console.log("[signIn] Login successful, navigating to:", returnTo || "/");
+      console.log("[signIn] Login successful, auth state should update shortly");
 
       toast({
         title: "Welcome back!",
         description: "You have successfully signed in.",
       });
 
-      // Navigate to returnTo URL or home
-      navigate(returnTo || "/");
+      // Don't navigate here - let the LoginForm useEffect handle the redirect
+      // This prevents race conditions and ensures proper auth state
     } catch (error: any) {
       console.error("[signIn] Authentication error:", error.message);
       // Error already set in the flow above
@@ -117,7 +126,7 @@ export const useAuthentication = () => {
     }
   };
 
-const signUp = async (
+  const signUp = async (
     email: string,
     password: string,
     fullName: string,
@@ -164,7 +173,7 @@ const signUp = async (
 
       if (error.message) {
         const message = error.message.toLowerCase();
-        
+
         if (message.includes("duplicate key") || message.includes("already registered") || message.includes("user already registered")) {
           errorMsg = "An account with this email already exists. Please sign in instead.";
         } else if (message.includes("database") || message.includes("violates")) {
@@ -207,8 +216,8 @@ const signUp = async (
       toast({
         variant: "destructive",
         title: "Registration failed",
-        description: shouldRetry ? 
-          "There was a temporary issue. Please try again." : 
+        description: shouldRetry ?
+          "There was a temporary issue. Please try again." :
           errorMsg.split('\n')[0], // Show only the first line in toast
       });
     } finally {
@@ -218,7 +227,7 @@ const signUp = async (
 
   const resetPassword = async (_email: string) => {
     setErrorMessage("Password reset is not available. Contact support.");
-      toast({
+    toast({
       variant: "destructive",
       title: "Not available",
       description: "Password reset flow is not configured.",

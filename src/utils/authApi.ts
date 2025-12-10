@@ -1,7 +1,7 @@
 // Minimal auth API helper for backend integration
 // Handles token storage and authenticated requests
 
-const API_BASE_URL = 'http://localhost:8000';
+
 
 const ACCESS_TOKEN_KEY = 'accessToken';
 
@@ -39,29 +39,38 @@ export async function login(email: string, password: string): Promise<{
   accessToken: string;
   refreshToken?: string;
 }> {
-  const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email, password }),
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
   });
 
-  if (!response.ok) {
-    const text = await response.text().catch(() => '');
-    throw new Error(text || 'Login failed');
+  if (error) {
+    throw new Error(error.message);
   }
 
-  const json = await response.json();
-  const data = json?.data;
-  if (!data?.accessToken || !data?.user) {
-    throw new Error('Invalid login response');
+  if (!data.session || !data.user) {
+    throw new Error('Login failed: No session returned');
   }
+
+  // Fetch user role if possible, or default to 'user' for initial login
+  // The AuthProvider will do a full profile/role fetch on mount/refresh
+  let role = 'user';
+
+  // Try to get role from metadata if available (optional optimization)
+  if (data.user.app_metadata?.role) {
+    role = data.user.app_metadata.role as string;
+  }
+
+  const authUser: AuthUser = {
+    id: data.user.id,
+    email: data.user.email!,
+    role: role,
+  };
 
   return {
-    user: data.user as AuthUser,
-    accessToken: data.accessToken as string,
-    refreshToken: data.refreshToken as string | undefined,
+    user: authUser,
+    accessToken: data.session.access_token,
+    refreshToken: data.session.refresh_token,
   };
 }
 

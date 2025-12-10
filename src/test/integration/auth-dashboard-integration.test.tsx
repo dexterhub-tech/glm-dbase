@@ -65,7 +65,7 @@ const mockedRoleManagement = vi.mocked(roleManagement);
 // Test components
 const TestDashboard = () => {
   const { user, isLoading, error, retry } = useAuth();
-  
+
   if (isLoading) return <div data-testid="dashboard-loading">Loading Dashboard...</div>;
   if (error) return (
     <div data-testid="dashboard-error">
@@ -74,7 +74,7 @@ const TestDashboard = () => {
     </div>
   );
   if (!user) return <div data-testid="dashboard-no-user">No User</div>;
-  
+
   return (
     <div data-testid="dashboard-content">
       <h1>Dashboard</h1>
@@ -119,7 +119,7 @@ const TestAuthComponent = () => {
 describe('Authentication Dashboard Integration Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Setup default mocks
     mockedNetworkConnectivity.networkManager = {
       getState: vi.fn(() => ({
@@ -128,33 +128,35 @@ describe('Authentication Dashboard Integration Tests', () => {
         lastConnectedAt: new Date(),
         lastDisconnectedAt: null,
         reconnectAttempts: 0,
-        connectionQuality: 'good',
+        connectionQuality: 'good' as const,
         latency: 50,
       })),
       subscribe: vi.fn(() => vi.fn()),
-    };
-    
-    mockedNetworkConnectivity.checkConnectivity = vi.fn().mockResolvedValue({
+    } as any;
+
+    mockedNetworkConnectivity.checkConnectivity.mockResolvedValue({
       isOnline: true,
       isSupabaseConnected: true,
       connectionQuality: 'good',
       latency: 50,
     });
-    
-    mockedNetworkConnectivity.subscribeToNetworkChanges = vi.fn(() => vi.fn());
-    mockedNetworkConnectivity.getCachedAuthState = vi.fn(() => null);
-    mockedNetworkConnectivity.cacheAuthState = vi.fn();
-    mockedNetworkConnectivity.clearCachedAuthState = vi.fn();
-    mockedNetworkConnectivity.startReconnection = vi.fn();
-    mockedNetworkConnectivity.stopReconnection = vi.fn();
-    mockedNetworkConnectivity.generateConnectionError = vi.fn((error) => ({
+
+    // Instead of assigning, configure the existing current mocks
+    mockedNetworkConnectivity.subscribeToNetworkChanges.mockImplementation(() => vi.fn());
+    mockedNetworkConnectivity.getCachedAuthState.mockReturnValue(null);
+    mockedNetworkConnectivity.cacheAuthState.mockImplementation(() => { });
+    mockedNetworkConnectivity.clearCachedAuthState.mockImplementation(() => { });
+    mockedNetworkConnectivity.startReconnection.mockImplementation(() => { });
+    mockedNetworkConnectivity.stopReconnection.mockImplementation(() => { });
+    mockedNetworkConnectivity.generateConnectionError.mockImplementation((error) => ({
       type: 'network',
       message: error.message || 'Connection failed',
       canRetry: true,
+      retryDelay: 1000,
       troubleshootingSteps: ['Check your internet connection'],
     }));
-    
-    mockedErrorRecovery.executeWithRecovery = vi.fn().mockImplementation(async (operation) => {
+
+    mockedErrorRecovery.executeWithRecovery.mockImplementation(async (operation) => {
       try {
         const result = await operation();
         return { success: true, result, attemptsUsed: 1, fallbackUsed: false, offlineMode: false };
@@ -162,26 +164,26 @@ describe('Authentication Dashboard Integration Tests', () => {
         return { success: false, error, attemptsUsed: 1, fallbackUsed: false, offlineMode: false };
       }
     });
-    
-    mockedErrorRecovery.initiateUserRecovery = vi.fn().mockResolvedValue({
+
+    mockedErrorRecovery.initiateUserRecovery.mockResolvedValue({
       success: true,
       attemptsUsed: 1,
       fallbackUsed: false,
       offlineMode: false,
     });
-    
-    mockedErrorRecovery.registerFallbackAuthMethod = vi.fn();
-    mockedErrorRecovery.registerDegradationHandler = vi.fn();
-    
-    mockedRoleManagement.verifyUserRole = vi.fn().mockResolvedValue({
+
+    mockedErrorRecovery.registerFallbackAuthMethod.mockImplementation(() => { });
+    mockedErrorRecovery.registerDegradationHandler.mockImplementation(() => { });
+
+    mockedRoleManagement.verifyUserRole.mockResolvedValue({
       role: 'admin',
       permissions: ['view_admin_dashboard', 'manage_users'],
       isVerified: true,
       lastVerified: new Date(),
       fallbackApplied: false,
     });
-    
-    mockedRoleManagement.reVerifyAdminPermissions = vi.fn().mockResolvedValue({
+
+    mockedRoleManagement.reVerifyAdminPermissions.mockResolvedValue({
       hasPermission: true,
       fallbackApplied: false,
     });
@@ -201,10 +203,10 @@ describe('Authentication Dashboard Integration Tests', () => {
       };
 
       mockedAuthApi.getCurrentUser.mockResolvedValue(testUser);
-      
+
       // Mock successful auth state change
       const mockAuthStateChange = vi.fn();
-      mockedSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockImplementation((callback: any) => {
         mockAuthStateChange.mockImplementation(callback);
         return { data: { subscription: { unsubscribe: vi.fn() } } };
       });
@@ -213,7 +215,7 @@ describe('Authentication Dashboard Integration Tests', () => {
 
       // Simulate successful login
       await act(async () => {
-        mockAuthStateChange('SIGNED_IN', { 
+        mockAuthStateChange('SIGNED_IN', {
           user: { id: testUser._id, email: testUser.email },
           access_token: 'valid-token'
         });
@@ -227,14 +229,14 @@ describe('Authentication Dashboard Integration Tests', () => {
       // Verify user information is displayed
       expect(screen.getByTestId('user-info')).toHaveTextContent('Welcome, admin@example.com');
       expect(screen.getByTestId('user-role')).toHaveTextContent('admin');
-      
+
       // Verify role verification was called
       expect(mockedRoleManagement.verifyUserRole).toHaveBeenCalledWith(testUser._id);
     });
 
     it('should handle authentication timeout gracefully', async () => {
       // Mock slow authentication
-      mockedAuthApi.getCurrentUser.mockImplementation(() => 
+      mockedAuthApi.getCurrentUser.mockImplementation(() =>
         new Promise(resolve => setTimeout(() => resolve({
           _id: 'user-123',
           email: 'test@example.com',
@@ -338,6 +340,7 @@ describe('Authentication Dashboard Integration Tests', () => {
         type: 'network',
         message: 'No internet connection detected',
         canRetry: true,
+        retryDelay: 1000,
         troubleshootingSteps: ['Check your internet connection'],
       });
 
@@ -351,13 +354,13 @@ describe('Authentication Dashboard Integration Tests', () => {
 
       // Simulate auth state change that fails
       const mockAuthStateChange = vi.fn();
-      mockedSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockImplementation((callback: any) => {
         mockAuthStateChange.mockImplementation(callback);
         return { data: { subscription: { unsubscribe: vi.fn() } } };
       });
 
       await act(async () => {
-        mockAuthStateChange('SIGNED_IN', { 
+        mockAuthStateChange('SIGNED_IN', {
           user: { id: testUser._id, email: testUser.email }
         });
       });
@@ -414,7 +417,7 @@ describe('Authentication Dashboard Integration Tests', () => {
 
     it('should use error recovery system for failed operations', async () => {
       mockedAuthApi.getCurrentUser.mockRejectedValue(new Error('Auth service unavailable'));
-      
+
       render(
         <BrowserRouter>
           <AuthProvider>
@@ -453,7 +456,7 @@ describe('Authentication Dashboard Integration Tests', () => {
         latency: null,
       });
 
-      mockedNetworkConnectivity.networkManager.getState.mockReturnValue({
+      (mockedNetworkConnectivity.networkManager.getState as unknown as import('vitest').MockInstance).mockReturnValue({
         isOnline: false,
         isSupabaseConnected: false,
         lastConnectedAt: null,
@@ -495,7 +498,7 @@ describe('Authentication Dashboard Integration Tests', () => {
         return vi.fn();
       });
 
-      mockedNetworkConnectivity.networkManager.getState.mockImplementation(() => ({
+      (mockedNetworkConnectivity.networkManager.getState as unknown as import('vitest').MockInstance).mockImplementation(() => ({
         isOnline,
         isSupabaseConnected: isOnline,
         lastConnectedAt: isOnline ? new Date() : null,
@@ -543,8 +546,8 @@ describe('Authentication Dashboard Integration Tests', () => {
       };
 
       // Add delay to simulate slow network
-      mockedAuthApi.getCurrentUser.mockImplementation(() => 
-        new Promise(resolve => 
+      mockedAuthApi.getCurrentUser.mockImplementation(() =>
+        new Promise(resolve =>
           setTimeout(() => resolve(testUser), 1000)
         )
       );
@@ -561,13 +564,13 @@ describe('Authentication Dashboard Integration Tests', () => {
 
       // Simulate auth state change
       const mockAuthStateChange = vi.fn();
-      mockedSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockImplementation((callback: any) => {
         mockAuthStateChange.mockImplementation(callback);
         return { data: { subscription: { unsubscribe: vi.fn() } } };
       });
 
       await act(async () => {
-        mockAuthStateChange('SIGNED_IN', { 
+        mockAuthStateChange('SIGNED_IN', {
           user: { id: testUser._id, email: testUser.email }
         });
       });
@@ -612,13 +615,13 @@ describe('Authentication Dashboard Integration Tests', () => {
 
       // Simulate successful authentication
       const mockAuthStateChange = vi.fn();
-      mockedSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockImplementation((callback: any) => {
         mockAuthStateChange.mockImplementation(callback);
         return { data: { subscription: { unsubscribe: vi.fn() } } };
       });
 
       await act(async () => {
-        mockAuthStateChange('SIGNED_IN', { 
+        mockAuthStateChange('SIGNED_IN', {
           user: { id: testUser._id, email: testUser.email }
         });
       });
@@ -670,13 +673,13 @@ describe('Authentication Dashboard Integration Tests', () => {
 
       // Simulate authentication
       const mockAuthStateChange = vi.fn();
-      mockedSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockImplementation((callback: any) => {
         mockAuthStateChange.mockImplementation(callback);
         return { data: { subscription: { unsubscribe: vi.fn() } } };
       });
 
       await act(async () => {
-        mockAuthStateChange('SIGNED_IN', { 
+        mockAuthStateChange('SIGNED_IN', {
           user: { id: testUser._id, email: testUser.email }
         });
       });
@@ -707,8 +710,8 @@ describe('Authentication Dashboard Integration Tests', () => {
 
     it('should handle loading states consistently across components', async () => {
       // Mock slow authentication
-      mockedAuthApi.getCurrentUser.mockImplementation(() => 
-        new Promise(resolve => 
+      mockedAuthApi.getCurrentUser.mockImplementation(() =>
+        new Promise(resolve =>
           setTimeout(() => resolve({
             _id: 'user-123',
             email: 'test@example.com',
@@ -743,13 +746,13 @@ describe('Authentication Dashboard Integration Tests', () => {
 
       // Simulate auth state change
       const mockAuthStateChange = vi.fn();
-      mockedSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockImplementation((callback: any) => {
         mockAuthStateChange.mockImplementation(callback);
         return { data: { subscription: { unsubscribe: vi.fn() } } };
       });
 
       await act(async () => {
-        mockAuthStateChange('SIGNED_IN', { 
+        mockAuthStateChange('SIGNED_IN', {
           user: { id: 'user-123', email: 'test@example.com' }
         });
       });
@@ -787,7 +790,7 @@ describe('Authentication Dashboard Integration Tests', () => {
 
       // Trigger multiple concurrent refreshes
       const refreshButton = screen.getByTestId('refresh-button');
-      
+
       await act(async () => {
         fireEvent.click(refreshButton);
         fireEvent.click(refreshButton);
@@ -804,7 +807,7 @@ describe('Authentication Dashboard Integration Tests', () => {
 
     it('should clean up resources properly on unmount', async () => {
       const unsubscribeMock = vi.fn();
-      mockedSupabase.auth.onAuthStateChange.mockReturnValue({
+      (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockReturnValue({
         data: { subscription: { unsubscribe: unsubscribeMock } }
       });
 
@@ -859,13 +862,13 @@ describe('Authentication Dashboard Integration Tests', () => {
 
       // Simulate auth state change
       const mockAuthStateChange = vi.fn();
-      mockedSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockImplementation((callback: any) => {
         mockAuthStateChange.mockImplementation(callback);
         return { data: { subscription: { unsubscribe: vi.fn() } } };
       });
 
       await act(async () => {
-        mockAuthStateChange('SIGNED_IN', { 
+        mockAuthStateChange('SIGNED_IN', {
           user: { id: testUser._id, email: testUser.email }
         });
       });

@@ -61,7 +61,7 @@ const UserDashboard = () => (
   </div>
 );
 
-const TestApp = ({ 
+const TestApp = ({
   initialRoute = '/login',
   userRole = 'user',
   requireAuth = true,
@@ -78,8 +78,8 @@ const TestApp = ({
         {initialRoute === '/login' ? (
           <LoginPage />
         ) : (
-          <AuthGuard 
-            requireAuth={requireAuth} 
+          <AuthGuard
+            requireAuth={requireAuth}
             requiredPermission={requiredPermission}
           >
             {userRole === 'admin' ? <AdminDashboard /> : <UserDashboard />}
@@ -93,7 +93,7 @@ const TestApp = ({
 describe('Authentication Flows Integration Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Setup default mocks
     mockedNetworkConnectivity.networkManager = {
       getState: vi.fn(() => ({
@@ -102,24 +102,25 @@ describe('Authentication Flows Integration Tests', () => {
         lastConnectedAt: new Date(),
         lastDisconnectedAt: null,
         reconnectAttempts: 0,
-        connectionQuality: 'good',
+        connectionQuality: 'good' as const,
         latency: 50,
       })),
       subscribe: vi.fn(() => vi.fn()),
-    };
-    
-    mockedNetworkConnectivity.subscribeToNetworkChanges = vi.fn(() => vi.fn());
-    mockedNetworkConnectivity.getCachedAuthState = vi.fn(() => null);
-    mockedNetworkConnectivity.cacheAuthState = vi.fn();
-    mockedNetworkConnectivity.clearCachedAuthState = vi.fn();
-    mockedNetworkConnectivity.generateConnectionError = vi.fn((error) => ({
+    } as any;
+
+    mockedNetworkConnectivity.subscribeToNetworkChanges.mockImplementation(() => vi.fn());
+    mockedNetworkConnectivity.getCachedAuthState.mockReturnValue(null);
+    mockedNetworkConnectivity.cacheAuthState.mockImplementation(() => { });
+    mockedNetworkConnectivity.clearCachedAuthState.mockImplementation(() => { });
+    mockedNetworkConnectivity.generateConnectionError.mockImplementation((error) => ({
       type: 'network',
       message: error.message || 'Connection failed',
       canRetry: true,
+      retryDelay: 1000,
       troubleshootingSteps: ['Check your internet connection'],
     }));
-    
-    mockedErrorRecovery.executeWithRecovery = vi.fn().mockImplementation(async (operation) => {
+
+    mockedErrorRecovery.executeWithRecovery.mockImplementation(async (operation) => {
       try {
         const result = await operation();
         return { success: true, result, attemptsUsed: 1, fallbackUsed: false, offlineMode: false };
@@ -127,18 +128,18 @@ describe('Authentication Flows Integration Tests', () => {
         return { success: false, error, attemptsUsed: 1, fallbackUsed: false, offlineMode: false };
       }
     });
-    
-    mockedErrorRecovery.initiateUserRecovery = vi.fn().mockResolvedValue({
+
+    mockedErrorRecovery.initiateUserRecovery.mockResolvedValue({
       success: true,
       attemptsUsed: 1,
       fallbackUsed: false,
       offlineMode: false,
     });
-    
-    mockedErrorRecovery.registerFallbackAuthMethod = vi.fn();
-    mockedErrorRecovery.registerDegradationHandler = vi.fn();
-    
-    mockedSupabase.auth.onAuthStateChange.mockReturnValue({
+
+    mockedErrorRecovery.registerFallbackAuthMethod.mockImplementation(() => { });
+    mockedErrorRecovery.registerDegradationHandler.mockImplementation(() => { });
+
+    (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockReturnValue({
       data: { subscription: { unsubscribe: vi.fn() } }
     });
   });
@@ -167,21 +168,21 @@ describe('Authentication Flows Integration Tests', () => {
 
       const startTime = performance.now();
 
-      render(<TestApp 
-        initialRoute="/admin" 
-        userRole="admin" 
-        requiredPermission="view_admin_dashboard" 
+      render(<TestApp
+        initialRoute="/admin"
+        userRole="admin"
+        requiredPermission="view_admin_dashboard"
       />);
 
       // Simulate successful authentication
       const mockAuthStateChange = vi.fn();
-      mockedSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockImplementation((callback: any) => {
         mockAuthStateChange.mockImplementation(callback);
         return { data: { subscription: { unsubscribe: vi.fn() } } };
       });
 
       await act(async () => {
-        mockAuthStateChange('SIGNED_IN', { 
+        mockAuthStateChange('SIGNED_IN', {
           user: { id: adminUser._id, email: adminUser.email },
           access_token: 'valid-admin-token'
         });
@@ -218,21 +219,21 @@ describe('Authentication Flows Integration Tests', () => {
         fallbackApplied: false,
       });
 
-      render(<TestApp 
-        initialRoute="/dashboard" 
-        userRole="user" 
-        requiredPermission="read_profile" 
+      render(<TestApp
+        initialRoute="/dashboard"
+        userRole="user"
+        requiredPermission="read_profile"
       />);
 
       // Simulate successful authentication
       const mockAuthStateChange = vi.fn();
-      mockedSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockImplementation((callback: any) => {
         mockAuthStateChange.mockImplementation(callback);
         return { data: { subscription: { unsubscribe: vi.fn() } } };
       });
 
       await act(async () => {
-        mockAuthStateChange('SIGNED_IN', { 
+        mockAuthStateChange('SIGNED_IN', {
           user: { id: regularUser._id, email: regularUser.email },
           access_token: 'valid-user-token'
         });
@@ -250,10 +251,10 @@ describe('Authentication Flows Integration Tests', () => {
       // No user authenticated
       mockedAuthApi.getCurrentUser.mockRejectedValue(new Error('Not authenticated'));
 
-      render(<TestApp 
-        initialRoute="/admin" 
-        userRole="admin" 
-        requiredPermission="view_admin_dashboard" 
+      render(<TestApp
+        initialRoute="/admin"
+        userRole="admin"
+        requiredPermission="view_admin_dashboard"
       />);
 
       // Should show loading initially, then redirect or show access denied
@@ -290,22 +291,22 @@ describe('Authentication Flows Integration Tests', () => {
         fallbackApplied: false,
       });
 
-      render(<TestApp 
-        initialRoute="/dashboard" 
-        userRole="user" 
-        requiredPermission="read_profile" 
+      render(<TestApp
+        initialRoute="/dashboard"
+        userRole="user"
+        requiredPermission="read_profile"
       />);
 
       // Simulate failed then successful auth
       const mockAuthStateChange = vi.fn();
-      mockedSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockImplementation((callback: any) => {
         mockAuthStateChange.mockImplementation(callback);
         return { data: { subscription: { unsubscribe: vi.fn() } } };
       });
 
       // First attempt fails
       await act(async () => {
-        mockAuthStateChange('SIGNED_IN', { 
+        mockAuthStateChange('SIGNED_IN', {
           user: { id: testUser._id, email: testUser.email }
         });
       });
@@ -315,7 +316,7 @@ describe('Authentication Flows Integration Tests', () => {
 
       // Second attempt should succeed
       await act(async () => {
-        mockAuthStateChange('SIGNED_IN', { 
+        mockAuthStateChange('SIGNED_IN', {
           user: { id: testUser._id, email: testUser.email }
         });
       });
@@ -352,24 +353,25 @@ describe('Authentication Flows Integration Tests', () => {
         type: 'network',
         message: 'No internet connection detected',
         canRetry: true,
+        retryDelay: 1000,
         troubleshootingSteps: ['Check your internet connection'],
       });
 
-      render(<TestApp 
-        initialRoute="/dashboard" 
-        userRole="user" 
-        requiredPermission="read_profile" 
+      render(<TestApp
+        initialRoute="/dashboard"
+        userRole="user"
+        requiredPermission="read_profile"
       />);
 
       // Simulate network failure during auth
       const mockAuthStateChange = vi.fn();
-      mockedSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockImplementation((callback: any) => {
         mockAuthStateChange.mockImplementation(callback);
         return { data: { subscription: { unsubscribe: vi.fn() } } };
       });
 
       await act(async () => {
-        mockAuthStateChange('SIGNED_IN', { 
+        mockAuthStateChange('SIGNED_IN', {
           user: { id: testUser._id, email: testUser.email }
         });
       });
@@ -391,10 +393,10 @@ describe('Authentication Flows Integration Tests', () => {
         offlineMode: true,
       });
 
-      render(<TestApp 
-        initialRoute="/dashboard" 
-        userRole="user" 
-        requiredPermission="read_profile" 
+      render(<TestApp
+        initialRoute="/dashboard"
+        userRole="user"
+        requiredPermission="read_profile"
       />);
 
       // Should handle service unavailability gracefully
@@ -402,7 +404,7 @@ describe('Authentication Flows Integration Tests', () => {
         // Should not crash and should show appropriate state
         expect(screen.queryByTestId('user-dashboard')).not.toBeInTheDocument();
         expect(
-          screen.getByText('Loading...') || 
+          screen.getByText('Loading...') ||
           screen.getByText('Access Denied') ||
           screen.queryByText(/error/i)
         ).toBeTruthy();
@@ -428,20 +430,20 @@ describe('Authentication Flows Integration Tests', () => {
         fallbackApplied: false,
       });
 
-      render(<TestApp 
-        initialRoute="/admin" 
-        userRole="admin" 
-        requiredPermission="view_admin_dashboard" 
+      render(<TestApp
+        initialRoute="/admin"
+        userRole="admin"
+        requiredPermission="view_admin_dashboard"
       />);
 
       const mockAuthStateChange = vi.fn();
-      mockedSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockImplementation((callback: any) => {
         mockAuthStateChange.mockImplementation(callback);
         return { data: { subscription: { unsubscribe: vi.fn() } } };
       });
 
       await act(async () => {
-        mockAuthStateChange('SIGNED_IN', { 
+        mockAuthStateChange('SIGNED_IN', {
           user: { id: adminUser._id, email: adminUser.email }
         });
       });
@@ -468,20 +470,20 @@ describe('Authentication Flows Integration Tests', () => {
         fallbackApplied: false,
       });
 
-      render(<TestApp 
-        initialRoute="/admin" 
-        userRole="user" 
-        requiredPermission="view_admin_dashboard" 
+      render(<TestApp
+        initialRoute="/admin"
+        userRole="user"
+        requiredPermission="view_admin_dashboard"
       />);
 
       const mockAuthStateChange = vi.fn();
-      mockedSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockImplementation((callback: any) => {
         mockAuthStateChange.mockImplementation(callback);
         return { data: { subscription: { unsubscribe: vi.fn() } } };
       });
 
       await act(async () => {
-        mockAuthStateChange('SIGNED_IN', { 
+        mockAuthStateChange('SIGNED_IN', {
           user: { id: regularUser._id, email: regularUser.email }
         });
       });
@@ -504,20 +506,20 @@ describe('Authentication Flows Integration Tests', () => {
       // Mock role verification failure
       mockedRoleManagement.verifyUserRole.mockRejectedValue(new Error('Role verification failed'));
 
-      render(<TestApp 
-        initialRoute="/dashboard" 
-        userRole="user" 
-        requiredPermission="read_profile" 
+      render(<TestApp
+        initialRoute="/dashboard"
+        userRole="user"
+        requiredPermission="read_profile"
       />);
 
       const mockAuthStateChange = vi.fn();
-      mockedSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockImplementation((callback: any) => {
         mockAuthStateChange.mockImplementation(callback);
         return { data: { subscription: { unsubscribe: vi.fn() } } };
       });
 
       await act(async () => {
-        mockAuthStateChange('SIGNED_IN', { 
+        mockAuthStateChange('SIGNED_IN', {
           user: { id: testUser._id, email: testUser.email }
         });
       });
@@ -526,7 +528,7 @@ describe('Authentication Flows Integration Tests', () => {
       await waitFor(() => {
         // Should either show dashboard (with fallback) or handle gracefully
         expect(
-          screen.getByTestId('user-dashboard') || 
+          screen.getByTestId('user-dashboard') ||
           screen.getByText('Access Denied') ||
           screen.getByText('Loading...')
         ).toBeTruthy();
@@ -556,8 +558,8 @@ describe('Authentication Flows Integration Tests', () => {
       });
 
       const AdminFeatureComponent = () => (
-        <AuthGuard 
-          requireAuth={true} 
+        <AuthGuard
+          requireAuth={true}
           requiredPermission="manage_users"
           reVerifyForAdmin={true}
         >
@@ -574,13 +576,13 @@ describe('Authentication Flows Integration Tests', () => {
       );
 
       const mockAuthStateChange = vi.fn();
-      mockedSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockImplementation((callback: any) => {
         mockAuthStateChange.mockImplementation(callback);
         return { data: { subscription: { unsubscribe: vi.fn() } } };
       });
 
       await act(async () => {
-        mockAuthStateChange('SIGNED_IN', { 
+        mockAuthStateChange('SIGNED_IN', {
           user: { id: adminUser._id, email: adminUser.email }
         });
       });
@@ -614,20 +616,20 @@ describe('Authentication Flows Integration Tests', () => {
 
       const startTime = performance.now();
 
-      render(<TestApp 
-        initialRoute="/dashboard" 
-        userRole="user" 
-        requiredPermission="read_profile" 
+      render(<TestApp
+        initialRoute="/dashboard"
+        userRole="user"
+        requiredPermission="read_profile"
       />);
 
       const mockAuthStateChange = vi.fn();
-      mockedSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockImplementation((callback: any) => {
         mockAuthStateChange.mockImplementation(callback);
         return { data: { subscription: { unsubscribe: vi.fn() } } };
       });
 
       await act(async () => {
-        mockAuthStateChange('SIGNED_IN', { 
+        mockAuthStateChange('SIGNED_IN', {
           user: { id: testUser._id, email: testUser.email }
         });
       });
@@ -652,8 +654,8 @@ describe('Authentication Flows Integration Tests', () => {
       };
 
       // Add delay to simulate network latency
-      mockedAuthApi.getCurrentUser.mockImplementation(() => 
-        new Promise(resolve => 
+      mockedAuthApi.getCurrentUser.mockImplementation(() =>
+        new Promise(resolve =>
           setTimeout(() => resolve(testUser), 1000)
         )
       );
@@ -666,23 +668,23 @@ describe('Authentication Flows Integration Tests', () => {
         fallbackApplied: false,
       });
 
-      render(<TestApp 
-        initialRoute="/dashboard" 
-        userRole="user" 
-        requiredPermission="read_profile" 
+      render(<TestApp
+        initialRoute="/dashboard"
+        userRole="user"
+        requiredPermission="read_profile"
       />);
 
       // Should show loading initially
       expect(screen.getByText('Loading...')).toBeInTheDocument();
 
       const mockAuthStateChange = vi.fn();
-      mockedSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mockImplementation((callback: any) => {
         mockAuthStateChange.mockImplementation(callback);
         return { data: { subscription: { unsubscribe: vi.fn() } } };
       });
 
       await act(async () => {
-        mockAuthStateChange('SIGNED_IN', { 
+        mockAuthStateChange('SIGNED_IN', {
           user: { id: testUser._id, email: testUser.email }
         });
       });

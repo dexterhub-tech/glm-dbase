@@ -68,7 +68,7 @@ describe.skip('AuthContext Basic Tests', () => {
     expect(screen.getByTestId('retry-count')).toHaveTextContent('0')
 
     // Simulate no session auth state change
-    const authStateCallback = mockedSupabase.auth.onAuthStateChange.mock.calls[0][0]
+    const authStateCallback = (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mock.calls[0][0]
     await act(async () => {
       authStateCallback('SIGNED_OUT', null)
     })
@@ -96,7 +96,7 @@ describe.skip('AuthContext Basic Tests', () => {
     )
 
     // Simulate auth state change
-    const authStateCallback = mockedSupabase.auth.onAuthStateChange.mock.calls[0][0]
+    const authStateCallback = (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mock.calls[0][0]
     await act(async () => {
       authStateCallback('SIGNED_IN', { user: { id: user._id, email: user.email } })
     })
@@ -122,7 +122,7 @@ describe.skip('AuthContext Basic Tests', () => {
     )
 
     // Simulate failed auth state change
-    const authStateCallback = mockedSupabase.auth.onAuthStateChange.mock.calls[0][0]
+    const authStateCallback = (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mock.calls[0][0]
     await act(async () => {
       authStateCallback('SIGNED_IN', { user: { id: 'test-id', email: 'test@example.com' } })
     })
@@ -160,7 +160,7 @@ describe.skip('AuthContext Basic Tests', () => {
       )
 
       // Simulate auth state change
-      const authStateCallback = mockedSupabase.auth.onAuthStateChange.mock.calls[0][0]
+      const authStateCallback = (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mock.calls[0][0]
       await act(async () => {
         authStateCallback('SIGNED_IN', { user: { id: user._id, email: user.email } })
       })
@@ -179,7 +179,7 @@ describe.skip('AuthContext Basic Tests', () => {
 
   it('should log authentication events', async () => {
     const consoleSpy = vi.spyOn(console, 'log')
-    
+
     const user = {
       _id: 'test-id',
       email: 'test@example.com',
@@ -196,7 +196,7 @@ describe.skip('AuthContext Basic Tests', () => {
     )
 
     // Simulate auth state change
-    const authStateCallback = mockedSupabase.auth.onAuthStateChange.mock.calls[0][0]
+    const authStateCallback = (mockedSupabase.auth.onAuthStateChange as unknown as import('vitest').MockInstance).mock.calls[0][0]
     await act(async () => {
       authStateCallback('SIGNED_IN', { user: { id: user._id, email: user.email } })
     })
@@ -206,12 +206,12 @@ describe.skip('AuthContext Basic Tests', () => {
     })
 
     // Verify logging occurred
-    const logCalls = consoleSpy.mock.calls.filter(call => 
+    const logCalls = consoleSpy.mock.calls.filter(call =>
       call[0] && call[0].includes('[AUTH]')
     )
-    
+
     expect(logCalls.length).toBeGreaterThan(0)
-    
+
     // Check for specific log events
     const logMessages = logCalls.map(call => call[0])
     expect(logMessages.some(msg => msg.includes('AUTH_PROVIDER_MOUNT'))).toBe(true)
