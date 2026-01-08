@@ -109,8 +109,8 @@ export default {
 				'fade-in': 'fade-in 0.5s ease-out'
 			},
 			fontFamily: {
-				'serif': ['Playfair Display', 'Georgia', 'serif'],
-				'sans': ['Inter', 'system-ui', 'sans-serif'],
+				'serif': ['"Plus Jakarta Sans"', 'Georgia', 'serif'],
+				'sans': ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
 			}
 		}
 	},

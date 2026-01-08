@@ -14,8 +14,6 @@ import { Loader2, Phone, MapPin, Mail, User, Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { setAccessToken } from "@/utils/authApi";
 import { isValidPhoneNumber, getPhoneValidationMessage } from "@/utils/phoneValidation";
-import axios from 'axios'
-import { supabase } from "@/integrations/supabase/client";
 
 
 export const AuthForm = () => {
@@ -156,50 +154,24 @@ export const AuthForm = () => {
 
     // Proceed with authentication
     if (isSignUp) {
-      console.log("Submitting signup form with:", {
-        email,
-        passwordLength: password.length,
-        fullName,
-        phone,
-        address,
+      // Use useAuthentication's signUp method which now calls our backend
+      await signUp(email, password, fullName, "", "", phone, address);
 
-      });
-      try {
-        const resp = await axios.post('https://church-management-api-p709.onrender.com/api/auth/register', {
-          fullName: fullName,
-          email: email,
-          password: password,
-        })
+      // If successful (no error was thrown and caught inside signUp), we might want to navigate
+      // But signUp in useAuthentication currently doesn't return anything or throw out.
+      // It sets errorMessage on failure.
+      // We can check if we are authenticated or just let the user see the success toast and redirect if implemented there.
+      // The updated signUp implementation does await refresh() and set token.
 
-        if (resp.data?.data?.accessToken) {
-          navigate('/admin-access');
-        }
-      } catch (error) {
-        clearErrors();
-        setErrorMessage('Error signing up. Please try again.');
+      // Ideally we should wait for auth state change or navigate if successful.
+      // Since useAuthentication manages state, we can rely on useEffect in AuthForm or AuthContext to handle redirect.
+      // However, for immediate feedback:
+      if (!errorMessage) {
+        // navigate happens via useEffect when user becomes available
       }
+
     } else {
-      try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (error) {
-          throw error;
-        }
-
-        if (data.session) {
-          if (isAdminLogin) {
-            navigate('/admin-access');
-          } else {
-            navigate(returnTo || '/');
-          }
-        }
-      } catch (error: any) {
-        clearErrors();
-        setErrorMessage(error.message || 'Invalid email or password');
-      }
+      await signIn(email, password, returnTo || '/');
     }
   };
 

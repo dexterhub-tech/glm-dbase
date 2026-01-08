@@ -2,7 +2,7 @@
 import * as z from "zod";
 
 export type MemberCategory = 'Members' | 'Pastors' | 'Workers' | 'Visitors' | 'Partners' | 'Sons' | 'MINT' | 'Others';
-export type AppRole = 'user' | 'admin' | 'superuser';
+export type AppRole = 'user' | 'admin' | 'superadmin' | 'pastor';
 
 /**
  * Enhanced Member interface representing a church member with consolidated data
@@ -15,15 +15,16 @@ export type AppRole = 'user' | 'admin' | 'superuser';
 export interface Member {
   // Identity
   id: string;
+  _id?: string; // Mongoose ID
   user_id?: string;      // DB column: 'user_id' - references auth.users(id)
-  
+
   // Basic Information (consolidated from both tables)
   email: string;
   fullname: string;      // DB column: 'fullname' - keeping lowercase for consistency
   phone?: string;
   address?: string;
   genotype?: string;     // New field from profiles table
-  
+
   // Church Information
   category: MemberCategory;
   title?: string;
@@ -34,14 +35,20 @@ export interface Member {
   joindate: string;      // DB column: 'joindate'
   notes?: string;
   isactive: boolean;     // DB column: 'isactive'
-  
+
   // Authentication and role information (from profiles)
   role: AppRole;         // DB column: 'role' - user role for permissions
-  
+
+  // New fields for RBAC and structure
+  status: 'pending' | 'approved';
+  auxanoCenter?: AuxanoCenter | string; // Populated or ID
+  unit?: Unit | string; // Populated or ID
+  discipleshipStatus?: boolean;
+
   // Metadata
   created_at: string;
   updated_at: string;
-  
+
   // Legacy/compatibility fields - for backward compatibility during transition
   fullName?: string;     // Camel case variant for existing code compatibility
   assignedTo?: string;   // Camel case variant for existing code compatibility
@@ -68,7 +75,7 @@ export const memberSchema = z.object({
   joindate: z.string().default(() => new Date().toISOString().split('T')[0]),
   notes: z.string().optional(),
   isactive: z.boolean().default(true),
-  role: z.enum(["user", "admin", "superuser"]).default("user"),
+  role: z.enum(["user", "admin", "superadmin", "pastor"]).default("user"),
 });
 
 export type MemberFormValues = z.infer<typeof memberSchema>;
@@ -132,7 +139,7 @@ export interface Pastor {
   created_at: string;
   updated_at: string;
   memberCount?: number;  // Not a DB column - calculated in code
-  
+
   // Legacy compatibility fields
   fullName?: string;     // Camel case variant for existing code compatibility
   assignedTo?: string;   // Camel case variant for existing code compatibility
@@ -164,10 +171,39 @@ export interface Worker {
   user_id?: string;      // DB column: 'user_id'
   created_at: string;
   updated_at: string;
-  
-  // Legacy compatibility fields
-  fullName?: string;     // Camel case variant for existing code compatibility
+
   assignedTo?: string;   // Camel case variant for existing code compatibility
   churchUnit?: string;   // Camel case variant for existing code compatibility
   auxanoGroup?: string;  // Camel case variant for existing code compatibility
+}
+
+export interface AuxanoCenter {
+  id: string;
+  name: string;
+  location: string;
+  pastors: string[]; // User IDs
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Unit {
+  id: string;
+  name: string;
+  description?: string;
+  head?: string; // User/Member ID
+  created_at: string;
+  updated_at: string;
+}
+
+export interface User {
+  _id: string;
+  email: string;
+  role: AppRole;
+  assignedAuxanoCenter?: string;
+  profile?: {
+    full_name?: string;
+    phone?: string;
+    [key: string]: any;
+  };
+  token?: string;
 }

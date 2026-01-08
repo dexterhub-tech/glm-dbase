@@ -1,1 +1,0 @@
-// Fix for mobile view toggle error in AdminSidebar.tsx and Dashboard.tsx
