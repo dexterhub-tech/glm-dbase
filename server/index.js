@@ -23,12 +23,14 @@ import authRoutes from './routes/authRoutes.js';
 import memberRoutes from './routes/memberRoutes.js';
 import publicRoutes from './routes/publicRoutes.js';
 import listRoutes from './routes/listRoutes.js';
+import auxanoRoutes from './routes/auxanoRoutes.js';
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/members', memberRoutes);
 app.use('/api/public', publicRoutes);
 app.use('/api/lists', listRoutes);
+app.use('/api/auxano', auxanoRoutes);
 
 app.get('/', (req, res) => {
     res.send('API is running...');

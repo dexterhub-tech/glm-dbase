@@ -1,5 +1,6 @@
 import AuxanoCenter from '../models/AuxanoCenter.js';
 import Unit from '../models/Unit.js';
+import User from '../models/User.js';
 
 // @desc    Get all Auxano Centers
 // @route   GET /api/lists/centers
@@ -25,4 +26,16 @@ const getUnits = async (req, res) => {
     }
 };
 
-export { getAuxanoCenters, getUnits };
+// @desc    Get all Pastors
+// @route   GET /api/lists/pastors
+// @access  Private
+const getPastors = async (req, res) => {
+    try {
+        const pastors = await User.find({ role: 'pastor' }).select('name email');
+        res.json(pastors);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export { getAuxanoCenters, getUnits, getPastors };

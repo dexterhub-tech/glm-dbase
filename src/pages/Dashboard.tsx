@@ -56,8 +56,18 @@ export default function Dashboard() {
         )
     }
 
+    const { data: pastors } = useQuery({
+        queryKey: ["pastors-list"],
+        queryFn: async () => {
+            const response = await api.get("/lists/pastors");
+            return response.data;
+        },
+    });
+
     const memberData = members || [];
-    const { user } = useAuth(); // Assuming useAuth is imported
+    const pastorsCount = pastors?.length || 0;
+    const messagesCount = 3; // Hardcoded for now based on RecentMessages list
+    const { user } = useAuth();
 
     if (user?.role === 'pastor') {
         return (
@@ -87,7 +97,11 @@ export default function Dashboard() {
                 {/* Optional: Add a date picker or action buttons here */}
             </div>
 
-            <OverviewStats members={memberData} />
+            <OverviewStats
+                members={memberData}
+                pastorsCount={pastorsCount}
+                messagesCount={messagesCount}
+            />
 
             <div className="md:grid space-y-4 md:space-y-0 gap-6 md:grid-cols-2 lg:grid-cols-7">
                 <GrowthChart members={memberData} />
