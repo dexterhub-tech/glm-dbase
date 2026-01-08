@@ -18,7 +18,6 @@ interface AddMemberForm {
     churchunit: string;
     assignedto: string;
 }
-
 export default function AddMemberPage() {
     const navigate = useNavigate();
     const { toast } = useToast();
